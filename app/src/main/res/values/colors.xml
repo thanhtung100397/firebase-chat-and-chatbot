@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#29B6F6</color>
+    <color name="colorPrimaryDark">#0086C3</color>
+    <color name="colorPrimaryLight">#73E8FF</color>
+    <color name="colorAccent">#FFCB2C</color>
+
+    <color name="dot_online_color">#00FF00</color>
+    <color name="dot_offline_color">#AAAAAA</color>
+
+    <color name="chat_board_background_color">#506EB5DC</color>
+    <color name="chat_message_box_background">#F3F3F3</color>
+    <color name="chat_message_box_pressed_background">#E7E7E7</color>
+    <color name="typing_indicator_color">#70AAAAAA</color>
+    <color name="sign_in_button_background">#4285F4</color>
+    <color name="new_message_card_background">#E4E9F2</color>
+    <color name="sign_in_button_pressed_background">#2E5DAA</color>
+    <color name="light_gray">#F1F3F2</color>
+
+</resources>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/auth_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:padding="@dimen/activity_padding">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/image_description"
+            android:scaleType="centerInside"
+            android:src="@drawable/firebase_logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/firebase"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_size_40sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/edit_text_margin_bottom"
+            android:orientation="horizontal">
+
+            <com.ttt.chat_module.common.custom_view.ClearableEditText
+                android:id="@+id/edt_first_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/first_name"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/font_size_20sp"
+                app:clearButtonDrawable="@drawable/ic_close"
+                app:edtIcon="@drawable/ic_user"
+                app:edtPadding="@dimen/edit_text_padding"
+                android:layout_weight="1"
+                android:layout_marginRight="@dimen/edit_text_padding"
+                android:layout_marginEnd="@dimen/edit_text_padding" />
+
+            <com.ttt.chat_module.common.custom_view.ClearableEditText
+                android:id="@+id/edt_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/last_name"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/font_size_20sp"
+                app:clearButtonDrawable="@drawable/ic_close"
+                app:edtPadding="@dimen/edit_text_padding"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+
+
+        <com.ttt.chat_module.common.custom_view.ClearableEditText
+            android:id="@+id/edt_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/edit_text_margin_bottom"
+            android:hint="@string/email"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_size_20sp"
+            app:clearButtonDrawable="@drawable/ic_close"
+            app:edtIcon="@drawable/ic_mail"
+            app:edtPadding="@dimen/edit_text_padding" />
+
+        <com.ttt.chat_module.common.custom_view.PasswordEditText
+            android:id="@+id/edt_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/edit_text_margin_bottom"
+            android:hint="@string/password"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_size_20sp"
+            app:edtIcon="@drawable/ic_key"
+            app:edtPadding="@dimen/edit_text_padding"
+            app:toggleButtonDrawable="@drawable/password_edit_text_view_button_drawable" />
+
+        <com.ttt.chat_module.common.custom_view.PasswordEditText
+            android:id="@+id/edt_confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:hint="@string/confirm_password"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_size_20sp"
+            app:edtIcon="@drawable/ic_key"
+            app:edtPadding="@dimen/edit_text_padding"
+            app:toggleButtonDrawable="@drawable/password_edit_text_view_button_drawable" />
+
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/edit_text_margin_bottom"
+            android:background="@color/colorPrimaryDark"
+            android:text="@string/create_new_account" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:text="@string/have_account"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/txt_sign_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sign_in"
+                android:textColor="@color/colorPrimaryDark" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

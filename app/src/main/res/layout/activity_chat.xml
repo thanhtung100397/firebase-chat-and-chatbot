@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rc_messages"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/app_bar"
+        android:layout_above="@id/ln_input"
+        android:background="@color/light_gray"/>
+
+    <RelativeLayout
+        android:id="@+id/ln_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:translationZ="4dp"
+        android:padding="@dimen/edit_text_padding"
+        android:layout_alignParentBottom="true">
+
+
+        <ImageButton
+            android:id="@+id/btn_emoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/ic_emoji"
+            android:layout_centerVertical="true"/>
+
+        <com.ttt.chat_module.common.custom_view.ClearableEditText
+            android:id="@+id/edt_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_size_16sp"
+            android:hint="@string/type_your_message"
+            android:layout_toLeftOf="@id/btn_send"
+            android:layout_toStartOf="@id/btn_send"
+            android:layout_toRightOf="@id/btn_emoji"
+            android:layout_toEndOf="@id/btn_emoji"
+            android:layout_marginRight="@dimen/edit_text_padding"
+            android:layout_marginEnd="@dimen/edit_text_padding"
+            android:layout_marginLeft="@dimen/edit_text_padding"
+            android:layout_marginStart="@dimen/edit_text_padding"
+            app:edtPadding="@dimen/edit_text_padding"
+            app:edtBackground="@drawable/message_edit_text_background"
+            app:clearButtonDrawable="@drawable/ic_close_round"/>
+
+        <ImageButton
+            android:id="@+id/btn_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/ic_send"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+</RelativeLayout>

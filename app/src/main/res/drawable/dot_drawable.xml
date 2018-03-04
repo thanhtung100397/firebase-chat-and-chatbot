@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:minLevel="0" android:maxLevel="0">
+        <shape android:shape="oval">
+            <size android:width="-1dp"
+                android:height="-1dp"/>
+            <solid android:color="@color/dot_offline_color"/>
+        </shape>
+    </item>
+
+    <item android:minLevel="1" android:maxLevel="1">
+        <shape android:shape="oval">
+            <size android:width="-1dp"
+                android:height="-1dp"/>
+            <solid android:color="@color/dot_online_color"/>
+        </shape>
+    </item>
+</level-list>

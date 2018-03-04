@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="edtPadding" format="dimension"/>
+    <attr name="edtIcon" format="integer"/>
+    <attr name="edtUnderlineColor" format="color"/>
+    <attr name="edtBackground" format="integer"/>
+    <attr name="edtGravityCentered" format="boolean"/>
+
+    <declare-styleable name="ClearableEditText">
+        <attr name="android:text"/>
+        <attr name="android:textColor"/>
+        <attr name="android:textSize"/>
+        <attr name="android:hint"/>
+        <attr name="android:lines"/>
+        <attr name="android:inputType"/>
+        <attr name="edtMaxLength" format="integer"/>
+        <attr name="edtGravityCentered"/>
+        <attr name="edtPadding"/>
+        <attr name="edtUnderlineColor" />
+        <attr name="edtBackground"/>
+        <attr name="edtIcon" />
+        <attr name="edtEditable" format="boolean"/>
+        <attr name="clearButtonDrawable" format="integer"/>
+        <attr name="clearButtonSize" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="PasswordEditText">
+        <attr name="android:text"/>
+        <attr name="android:textColor"/>
+        <attr name="android:textSize"/>
+        <attr name="android:hint"/>
+        <attr name="edtGravityCentered"/>
+        <attr name="edtPadding"/>
+        <attr name="edtIcon"/>
+        <attr name="edtUnderlineColor"/>
+        <attr name="edtBackground"/>
+        <attr name="toggleButtonDrawable" format="integer"/>
+        <attr name="toggleButtonSize" format="dimension"/>
+    </declare-styleable>
+</resources>
+

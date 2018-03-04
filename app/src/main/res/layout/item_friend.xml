@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/selectableItemBackground"
+    android:padding="@dimen/item_padding">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="@dimen/small_avatar_size"
+        android:layout_height="@dimen/small_avatar_size"
+        android:src="@drawable/avatar_placeholder"
+        android:layout_marginRight="@dimen/item_padding"
+        android:layout_marginEnd="@dimen/item_padding" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_online"
+        android:layout_width="@dimen/dot_size"
+        android:layout_height="@dimen/dot_size"
+        app:civ_border_color="@android:color/white"
+        app:civ_border_width="3dp"
+        android:src="@color/dot_online_color"
+        android:layout_alignBottom="@id/img_avatar"
+        android:layout_alignRight="@id/img_avatar"
+        android:layout_alignEnd="@id/img_avatar" />
+
+    <TextView
+        android:id="@+id/txt_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/font_size_16sp"
+        android:textColor="@android:color/black"
+        android:text="Tran Thanh Tung"
+        android:layout_toRightOf="@id/img_avatar"/>
+
+    <TextView
+        android:id="@+id/txt_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/font_size_13sp"
+        android:text="thanhtung100397@gmail.com"
+        android:layout_below="@id/txt_name"
+        android:layout_alignLeft="@id/txt_name"
+        android:layout_alignStart="@id/txt_name" />
+
+</RelativeLayout>

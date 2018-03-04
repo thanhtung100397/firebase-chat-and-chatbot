@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Chat Module</string>
+    <string name="image_description">image</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_account">Account</string>
+    <string name="title_friends">Friends</string>
+    <string name="email">Email</string>
+    <string name="enter_email">Please enter email</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="enter_password">Please enter password</string>
+    <string name="wrong_email_or_password">Wrong email or password</string>
+    <string name="unexpected_error_occurred">An unexpected error occurred, please try again</string>
+    <string name="retry">retry</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="not_have_account">Not have account?</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="create_new_account">Create new account</string>
+    <string name="firebase">Firebase</string>
+    <string name="have_account">Have account</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="enter_first_name">Enter first name</string>
+    <string name="enter_last_name">Enter last name</string>
+    <string name="confirm_password_mismatch">Confirm password mismatch</string>
+    <string name="enter_confirm_password">Enter confirm password</string>
+    <string name="email_exist">Email exist</string>
+    <string name="password_should_be_at_leas_6_characters">Password should be at least 6 characters</string>
+    <string name="type_your_message">Type your message...</string>
+    <string name="seen">seen</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="seen_by">seen by</string>
+</resources>
