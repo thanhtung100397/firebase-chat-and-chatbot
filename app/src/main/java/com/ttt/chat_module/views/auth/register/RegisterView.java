@@ -12,5 +12,5 @@ public interface RegisterView {
     void showEmailInputError(String message);
     void showPasswordInputError(String message);
     void showConfirmPasswordInputError(String message);
-    void navigateToLoginScreen(String email, String password);
+    void navigateToLoginScreen(String email);
 }

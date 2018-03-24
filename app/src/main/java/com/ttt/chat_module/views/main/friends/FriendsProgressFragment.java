@@ -2,7 +2,7 @@ package com.ttt.chat_module.views.main.friends;
 
 import android.support.v4.app.Fragment;
 
-import com.ttt.chat_module.presenters.base_progress_fragment.BaseProgressFragmentPresenter;
+import com.ttt.chat_module.presenters.base_progress.BaseProgressFragmentPresenter;
 import com.ttt.chat_module.presenters.main.friends.FriendsProgressPresenter;
 import com.ttt.chat_module.views.base.fragment.BaseProgressFragment;
 

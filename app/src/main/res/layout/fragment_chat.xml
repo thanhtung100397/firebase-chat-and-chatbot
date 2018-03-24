@@ -12,7 +12,9 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/tool_bar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -23,6 +25,40 @@
         android:layout_below="@id/app_bar"
         android:layout_above="@id/ln_input"
         android:background="@color/light_gray"/>
+
+    <ProgressBar
+        android:id="@+id/progress_first_loading_messages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminateTint="@color/colorPrimary"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/ln_retry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/error_occurred"
+            android:textSize="@dimen/font_size_20dp"/>
+
+        <Button
+            android:id="@+id/btn_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/retry"
+            android:background="?attr/selectableItemBackground"
+            android:textColor="@android:color/tab_indicator_text"
+            android:drawableLeft="@mipmap/ic_retry"
+            android:drawableStart="@mipmap/ic_retry"/>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/ln_input"
@@ -47,7 +83,7 @@
             android:id="@+id/edt_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/font_size_16sp"
+            android:textSize="@dimen/font_size_16dp"
             android:hint="@string/type_your_message"
             android:layout_toLeftOf="@id/btn_send"
             android:layout_toStartOf="@id/btn_send"

@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="dd/MM/yyyy hh:mm"
-        android:textSize="@dimen/font_size_10sp"
+        android:textSize="@dimen/font_size_10dp"
         android:layout_marginLeft="@dimen/small_padding"
         android:layout_marginStart="@dimen/small_padding"
         android:visibility="gone"/>
@@ -34,7 +34,7 @@
             android:maxWidth="@dimen/edit_text_max_width"
             android:paddingTop="@dimen/small_padding"
             android:paddingBottom="@dimen/small_padding"
-            android:textSize="@dimen/font_size_15sp"
+            android:textSize="@dimen/font_size_15dp"
             android:text="Lorem inspu ansdi ufhush fuehguf rhgurhgurhgrg"
             android:textColor="@android:color/black"/>
 
@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/seen"
-        android:textSize="@dimen/font_size_10sp"
+        android:textSize="@dimen/font_size_10dp"
         android:layout_below="@id/card_message"
         android:layout_alignRight="@id/card_message"
         android:layout_alignEnd="@id/card_message"

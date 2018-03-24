@@ -1,6 +1,7 @@
 package com.ttt.chat_module.views.main.friends;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
@@ -13,10 +14,13 @@ import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.adapter.recycler_view_adapter.ListFriendsAdapter;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.ttt.chat_module.common.recycler_view_adapter.RecyclerViewAdapter;
+import com.ttt.chat_module.common.utils.UserAuth;
 import com.ttt.chat_module.models.User;
+import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.presenters.main.friends.FriendsPresenter;
 import com.ttt.chat_module.presenters.main.friends.FriendsPresenterImpl;
 import com.ttt.chat_module.views.base.fragment.BaseFragment;
+import com.ttt.chat_module.views.chat.activity.ChatActivity;
 
 import java.util.List;
 
@@ -36,7 +40,7 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
     private ListFriendsAdapter listFriendsAdapter;
 
     @Override
-    protected int getLayoutResource() {
+    protected int getLayoutResources() {
         return R.layout.fragment_friends;
     }
 
@@ -75,7 +79,7 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
 
     @Override
     protected FriendsPresenter initPresenter() {
-        return new FriendsPresenterImpl(getActivity(), this);
+        return new FriendsPresenterImpl(this);
     }
 
     @Override
@@ -130,6 +134,14 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
 
     @Override
     public void onItemClick(RecyclerView.Adapter adapter, RecyclerView.ViewHolder viewHolder, int viewType, int position) {
+        Context context = getActivity();
+        Intent intent = new Intent(context, ChatActivity.class);
+        String[] userIDs = new String[2];
+        userIDs[0] = UserAuth.getUserID();
+        User friend = listFriendsAdapter.getItem(position, User.class);
+        userIDs[1] = friend.getEmail();
+        intent.putExtra(Constants.KEY_USER_IDS, userIDs);
 
+        context.startActivity(intent);
     }
 }

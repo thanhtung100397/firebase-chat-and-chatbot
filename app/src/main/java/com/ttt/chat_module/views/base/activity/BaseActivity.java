@@ -28,10 +28,11 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResources());
 
+        this.presenter = initPresenter();
+
         initVariables(savedInstanceState);
         initData(savedInstanceState);
 
-        this.presenter = initPresenter();
     }
 
     @Override

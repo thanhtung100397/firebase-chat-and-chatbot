@@ -5,8 +5,10 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.TextInputEditText;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -18,7 +20,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -29,15 +30,15 @@ import com.ttt.chat_module.R;
  */
 
 public class ClearableEditText extends RelativeLayout implements View.OnClickListener, TextWatcher {
-    public static final int DEFAULT_CLEAR_BUTTON_SIZE_DP = 24;
-    public static final int DEFAULT_DRAWABLE_PADDING_DP = 10;
+    public static final int DEFAULT_CLEAR_BUTTON_SIZE_DP = 20;
+    public static final int DEFAULT_TEXT_PADDING_DP = 10;
 
-    private EditText editText;
+    protected TextInputEditText editText;
     private Button clearButton;
-    private int drawablePaddingNormal;
-    private int editTextPaddingSide = 0;
+    private int editTextPaddingNormal;
     private int editTextPaddingWhenClearButtonVisible;
     private boolean isButtonHideByError = false;
+    private OnTextClearedListener onTextClearedListener;
 
     public ClearableEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -54,10 +55,10 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
 
         Context context = getContext();
 
-        editText = new EditText(context);
+        editText = new TextInputEditText(context);
 
         int maxLength = a.getInt(R.styleable.ClearableEditText_edtMaxLength, 0);
-        if (maxLength > 0) {
+        if(maxLength > 0) {
             InputFilter[] filter = new InputFilter[1];
             filter[0] = new InputFilter.LengthFilter(maxLength);
             editText.setFilters(filter);
@@ -65,8 +66,21 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
 
         editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, a.getDimensionPixelSize(R.styleable.ClearableEditText_android_textSize, 18));
         editText.setTextColor(a.getColor(R.styleable.ClearableEditText_android_textColor, Color.BLACK));
+        int colorHint = a.getColor(R.styleable.ClearableEditText_android_textColorHint, -1);
+        if(colorHint != -1) {
+            editText.setHintTextColor(colorHint);
+        }
         editText.setHint(a.getString(R.styleable.ClearableEditText_android_hint));
         editText.setGravity(a.getBoolean(R.styleable.ClearableEditText_edtGravityCentered, false) ? Gravity.CENTER : Gravity.START);
+        Drawable drawable = a.getDrawable(R.styleable.ClearableEditText_edtBackground);
+        if (drawable != null) {
+            editText.setBackground(drawable);
+        } else {
+            int underLineColor = a.getColor(R.styleable.ClearableEditText_edtUnderlineColor, -1);
+            if (underLineColor != -1) {
+                editText.getBackground().setColorFilter(underLineColor, PorterDuff.Mode.SRC_IN);
+            }
+        }
         int lineNumber = a.getInt(R.styleable.ClearableEditText_android_lines, 1);
         editText.setLines(lineNumber);
         if (lineNumber == 1) {
@@ -79,23 +93,14 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
         Drawable iconDrawable = a.getDrawable(R.styleable.ClearableEditText_edtIcon);
         editText.setCompoundDrawablesWithIntrinsicBounds(iconDrawable, null, null, null);
 
-        drawablePaddingNormal = a.getDimensionPixelSize(R.styleable.ClearableEditText_edtPadding, dpToPx(DEFAULT_DRAWABLE_PADDING_DP, context));
+        editTextPaddingNormal = a.getDimensionPixelSize(R.styleable.ClearableEditText_edtPadding, dpToPx(DEFAULT_TEXT_PADDING_DP, context));
+
+        editTextPaddingNormal = a.getDimensionPixelSize(R.styleable.ClearableEditText_edtPadding, dpToPx(DEFAULT_TEXT_PADDING_DP, context));
 
         Drawable editTextIconDrawable = a.getDrawable(R.styleable.ClearableEditText_edtIcon);
         if (editTextIconDrawable != null) {
             editText.setCompoundDrawablesWithIntrinsicBounds(editTextIconDrawable, null, null, null);
-            editText.setCompoundDrawablePadding(drawablePaddingNormal);
-        }
-
-        Drawable drawable = a.getDrawable(R.styleable.ClearableEditText_edtBackground);
-        if (drawable != null) {
-            editText.setBackground(drawable);
-            editTextPaddingSide = drawablePaddingNormal;
-        } else {
-            int underLineColor = a.getColor(R.styleable.ClearableEditText_edtUnderlineColor, -1);
-            if (underLineColor != -1) {
-                editText.getBackground().setColorFilter(underLineColor, PorterDuff.Mode.SRC_IN);
-            }
+            editText.setCompoundDrawablePadding(editTextPaddingNormal);
         }
 
         LinearLayout.LayoutParams editTextLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -106,17 +111,18 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
         int clearButtonSize = a.getDimensionPixelSize(R.styleable.ClearableEditText_clearButtonSize, dpToPx(DEFAULT_CLEAR_BUTTON_SIZE_DP, context));
         LayoutParams clearButtonLp = new LayoutParams(clearButtonSize, clearButtonSize);
         clearButtonLp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        int clearButtonMarginRight = clearButtonSize / 2;
         if (lineNumber == 1) {
-            clearButtonLp.setMargins(editTextPaddingSide, 0, editTextPaddingSide, 0);
+            clearButtonLp.setMargins(0, 0, clearButtonMarginRight, 0);
             clearButtonLp.addRule(RelativeLayout.CENTER_VERTICAL);
         } else {
             int clearButtonMarginTop = clearButtonSize / 2;
-            clearButtonLp.setMargins(0, clearButtonMarginTop, 0, 0);
+            clearButtonLp.setMargins(0, clearButtonMarginTop, clearButtonMarginRight, 0);
         }
         clearButton.setLayoutParams(clearButtonLp);
         clearButton.setOnClickListener(this);
 
-        editTextPaddingWhenClearButtonVisible = clearButtonSize + editTextPaddingSide * 2;
+        editTextPaddingWhenClearButtonVisible = clearButtonSize + clearButtonMarginRight * 2;
 
         editText.addTextChangedListener(this);
 
@@ -134,8 +140,20 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
         a.recycle();
     }
 
+    public void setOnTextClearedListener(OnTextClearedListener onTextClearedListener) {
+        this.onTextClearedListener = onTextClearedListener;
+    }
+
+    public void setOnEditTextClickListener(OnClickListener listener) {
+        editText.setOnClickListener(listener);
+    }
+
+    public void addTextChangeListener(TextWatcher textWatcher) {
+        editText.addTextChangedListener(textWatcher);
+    }
+
     public void setError(String text) {
-        if (text != null) {
+        if(text != null) {
             clearButton.setVisibility(GONE);
             setClearButtonVisibility(INVISIBLE);
             isButtonHideByError = true;
@@ -145,14 +163,12 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
         editText.setError(text);
     }
 
-    public void setOnEditTextClickListener(OnClickListener listener) {
-        editText.setOnClickListener(listener);
-    }
-
     public void setEditable(boolean editable) {
-        editText.setFocusable(editable);
+        if(!editable) {
+            editText.setInputType(InputType.TYPE_NULL);
+        }
+        editText.setClickable(editable);
         editText.setLongClickable(editable);
-        editText.setClickable(!editable);
     }
 
     public String getText() {
@@ -180,6 +196,9 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (s.length() == 0) {
             hideClearButtonWithAnimation();
+            if(onTextClearedListener != null) {
+                onTextClearedListener.onTextCleared();
+            }
         }
     }
 
@@ -192,9 +211,9 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
 
     public void setClearButtonVisibility(int visibility) {
         if (visibility == VISIBLE) {
-            editText.setPadding(editTextPaddingSide, drawablePaddingNormal, editTextPaddingWhenClearButtonVisible, drawablePaddingNormal);
+            editText.setPadding(editTextPaddingNormal,editTextPaddingNormal, editTextPaddingWhenClearButtonVisible, editTextPaddingNormal);
         } else {
-            editText.setPadding(editTextPaddingSide, drawablePaddingNormal, editTextPaddingSide, drawablePaddingNormal);
+            editText.setPadding(editTextPaddingNormal, editTextPaddingNormal, editTextPaddingNormal, editTextPaddingNormal);
         }
         clearButton.setVisibility(visibility);
     }
@@ -234,5 +253,9 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
     public static int pxToDp(int px, Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public interface OnTextClearedListener {
+        void onTextCleared();
     }
 }

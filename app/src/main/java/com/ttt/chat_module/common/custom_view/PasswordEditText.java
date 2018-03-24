@@ -11,7 +11,6 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -20,24 +19,24 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.ttt.chat_module.R;
+
 
 /**
  * Created by TranThanhTung on 24/11/2017.
  */
 
 public class PasswordEditText extends RelativeLayout implements View.OnClickListener, TextWatcher {
-    public static final int DEFAULT_CLEAR_BUTTON_SIZE_DP = 24;
+    public static final int DEFAULT_CLEAR_BUTTON_SIZE_DP = 20;
     public static final int DEFAULT_TEXT_PADDING_DP = 10;
 
     private static final int MODE_SHOW_PASSWORD = 0;
     private static final int MODE_HIDE_PASSWORD = 1;
 
-    private EditText editText;
+    private TextInputEditText editText;
     private Button showHideButton;
     private int editTextPaddingNormal;
     private int editTextPaddingWhenShowHideButtonVisible;
@@ -58,10 +57,14 @@ public class PasswordEditText extends RelativeLayout implements View.OnClickList
 
         Context context = getContext();
 
-        editText = new EditText(context);
+        editText = new TextInputEditText(context);
 
         editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, a.getDimensionPixelSize(R.styleable.PasswordEditText_android_textSize, 18));
         editText.setTextColor(a.getColor(R.styleable.PasswordEditText_android_textColor, Color.BLACK));
+        int colorHint = a.getColor(R.styleable.PasswordEditText_android_textColorHint, -1);
+        if(colorHint != -1) {
+            editText.setHintTextColor(colorHint);
+        }
         editText.setHint(a.getString(R.styleable.PasswordEditText_android_hint));
         editText.setGravity(a.getBoolean(R.styleable.PasswordEditText_edtGravityCentered, false) ? Gravity.CENTER : Gravity.START);
         Drawable drawable = a.getDrawable(R.styleable.PasswordEditText_edtBackground);
@@ -96,7 +99,7 @@ public class PasswordEditText extends RelativeLayout implements View.OnClickList
         LayoutParams showHideButtonLp = new LayoutParams(clearButtonSize, clearButtonSize);
         showHideButtonLp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         int clearButtonMarginRight = clearButtonSize / 2;
-        showHideButtonLp.setMargins(0, 0, 0, 0);
+        showHideButtonLp.setMargins(0, 0, clearButtonMarginRight, 0);
         showHideButtonLp.addRule(RelativeLayout.CENTER_VERTICAL);
 
         showHideButton.setLayoutParams(showHideButtonLp);
@@ -173,9 +176,9 @@ public class PasswordEditText extends RelativeLayout implements View.OnClickList
 
     public void setButtonVisibility(int visibility) {
         if (visibility == VISIBLE) {
-            editText.setPadding(0, editTextPaddingNormal, editTextPaddingWhenShowHideButtonVisible, editTextPaddingNormal);
+            editText.setPadding(editTextPaddingNormal, editTextPaddingNormal, editTextPaddingWhenShowHideButtonVisible, editTextPaddingNormal);
         } else {
-            editText.setPadding(0, editTextPaddingNormal, 0, editTextPaddingNormal);
+            editText.setPadding(editTextPaddingNormal, editTextPaddingNormal, editTextPaddingNormal, editTextPaddingNormal);
         }
         showHideButton.setVisibility(visibility);
     }

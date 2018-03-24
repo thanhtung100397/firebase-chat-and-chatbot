@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public static String TAG = "RecyclerViewAdapter";
     public static final int VIEW_TYPE_NORMAL = 0;
 
     public static AtomicInteger idGenerator = new AtomicInteger();
@@ -102,12 +103,15 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     public void clear() {
+        int itemCount = getItemCount();
         listWrapperModels.clear();
-        notifyDataSetChanged();
+        notifyItemRangeRemoved(0, itemCount);
     }
 
     public <T> void refresh(List<T> models) {
+        int itemCount = getItemCount();
         listWrapperModels.clear();
+        notifyItemRangeRemoved(0, itemCount);
         addModels(models, false);
     }
 
@@ -120,16 +124,12 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     public <T> void addModels(List<T> listModels, int fromIndex, int toIndex, int viewType, boolean isScroll) {
-//        if (fromIndex < 0 || fromIndex >= listModels.size() ||
-//                toIndex < 0 || toIndex >= listModels.size() ||
-//                fromIndex > toIndex) {
-//            return;
-//        }
-        //TODO
+        int startInsertedPosition = getItemCount();
+        int endInsertedPosition = startInsertedPosition + listModels.size();
         for (int i = fromIndex; i <= toIndex; i++) {
             addModel(listModels.get(i), viewType, false, false);
         }
-        notifyDataSetChanged();
+        notifyItemRangeInserted(startInsertedPosition, endInsertedPosition);
         if (isScroll) {
             getRecyclerView().scrollToPosition(listWrapperModels.size() - 1);
         }
@@ -161,6 +161,14 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
     public void addModel(int index, Object model, int viewType, boolean isScroll) {
         addModel(index, model, viewType, isScroll, true);
+    }
+
+    public void updateModel(int position, Object model, boolean isScroll) {
+        getListWrapperModels().get(position).model = model;
+        notifyItemChanged(position);
+        if (isScroll) {
+            getRecyclerView().scrollToPosition(position);
+        }
     }
 
     public void addModel(int index, Object model, int viewType, boolean isScroll, boolean isUpdate) {
@@ -411,13 +419,13 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         }
     }
 
-    public class ModelWrapper implements Cloneable {
+    public static class ModelWrapper implements Cloneable {
         int id = idGenerator.getAndIncrement();
         Object model;
         int viewType;
         boolean isSelected = false;
 
-        ModelWrapper(Object model, int viewType) {
+        public ModelWrapper(Object model, int viewType) {
             this.model = model;
             this.viewType = viewType;
         }

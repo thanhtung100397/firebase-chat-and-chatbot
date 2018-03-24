@@ -1,7 +1,6 @@
 package com.ttt.chat_module.common.recycler_view_adapter;
 
 import android.support.v7.util.DiffUtil;
-import android.util.Log;
 
 import java.util.List;
 

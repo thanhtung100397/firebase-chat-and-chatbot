@@ -74,9 +74,9 @@ public class RegisterPresenterImpl implements RegisterPresenter {
         registerView.showProgress();
         registerInteractor.register(email, password, firstName, lastName, new OnRegisterCompleteListener() {
             @Override
-            public void onRegisterSuccess(String email, String password) {
+            public void onRegisterSuccess(String email) {
                 registerView.hideProgress();
-                registerView.navigateToLoginScreen(email, password);
+                registerView.navigateToLoginScreen(email);
             }
 
             @Override

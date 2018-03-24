@@ -1,6 +1,6 @@
-package com.ttt.chat_module.presenters.chat;
+package com.ttt.chat_module.presenters.chat.fragment;
 
-import com.ttt.chat_module.common.adapter.recycler_view_adapter.Message;
+import com.ttt.chat_module.models.Message;
 
 /**
  * Created by TranThanhTung on 20/02/2018.

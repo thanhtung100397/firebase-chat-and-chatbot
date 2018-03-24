@@ -16,7 +16,7 @@ import com.ttt.chat_module.views.main.home.HomeProgressFragment;
 public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
     public static final int HOME_FRAGMENT_POSITION = 0;
     public static final int FRIENDS_FRAGMENT_POSITION = 1;
-    public static final int ACCOUNT_FRAGMENT_POSITION = 2;
+    public static final int PROFILE_FRAGMENT_POSITION = 2;
 
     private Fragment[] fragments;
 
@@ -26,7 +26,7 @@ public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
 
         fragments[HOME_FRAGMENT_POSITION] = new HomeProgressFragment();
         fragments[FRIENDS_FRAGMENT_POSITION] = new FriendsProgressFragment();
-        fragments[ACCOUNT_FRAGMENT_POSITION] = new AccountProgressFragment();
+        fragments[PROFILE_FRAGMENT_POSITION] = new AccountProgressFragment();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
                 return R.id.navigation_friends;
             }
 
-            case ACCOUNT_FRAGMENT_POSITION:{
+            case PROFILE_FRAGMENT_POSITION:{
                 return R.id.navigation_account;
             }
 

@@ -3,7 +3,7 @@
     <string name="image_description">image</string>
 
     <string name="title_home">Home</string>
-    <string name="title_account">Account</string>
+    <string name="title_profile">Profile</string>
     <string name="title_friends">Friends</string>
     <string name="email">Email</string>
     <string name="enter_email">Please enter email</string>
@@ -18,7 +18,7 @@
     <string name="create_an_account">Create an account</string>
     <string name="create_new_account">Create new account</string>
     <string name="firebase">Firebase</string>
-    <string name="have_account">Have account</string>
+    <string name="already_have_an_account">Already have an account?</string>
     <string name="confirm_password">Confirm password</string>
     <string name="enter_first_name">Enter first name</string>
     <string name="enter_last_name">Enter last name</string>
@@ -31,4 +31,8 @@
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
     <string name="seen_by">seen by</string>
+    <string name="error_occurred">Error occurred</string>
+    <string name="sent">sent</string>
+    <string name="logout">Logout</string>
+    <string name="logout_failure">logout failure, please try again</string>
 </resources>

@@ -20,7 +20,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
     RecyclerView rcMessages;
 
     @Override
-    protected int getLayoutResource() {
+    protected int getLayoutResources() {
         return R.layout.fragment_home;
     }
 

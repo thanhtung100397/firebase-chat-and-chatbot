@@ -1,4 +1,4 @@
-package com.ttt.chat_module.common.adapter.recycler_view_adapter;
+package com.ttt.chat_module.models;
 
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.ServerTimestamp;
@@ -11,29 +11,30 @@ import java.util.Set;
  */
 
 public class Message {
-    private String owner;
-    private String message;
+    public static final String CREATED_DATE = "createdDate";
+
+    private String ownerEmail;
     @ServerTimestamp
+    private String message;
     private Date createdDate;
     private Set<String> seenBy;
 
-    @Exclude
     private boolean isExpanded;
 
-    public Message(String owner, String message) {
-        this.owner = owner;
+    public Message(String ownerEmail, String message) {
+        this.ownerEmail = ownerEmail;
         this.message = message;
     }
 
     public Message() {
     }
 
-    public String getOwner() {
-        return owner;
+    public String getOwnerEmail() {
+        return ownerEmail;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 
     public String getMessage() {
@@ -60,6 +61,7 @@ public class Message {
         this.seenBy = seenBy;
     }
 
+    @Exclude
     public boolean isExpanded() {
         return isExpanded;
     }

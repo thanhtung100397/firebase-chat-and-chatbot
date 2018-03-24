@@ -1,18 +1,17 @@
 package com.ttt.chat_module.views.auth.login;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.ttt.chat_module.R;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.custom_view.ClearableEditText;
 import com.ttt.chat_module.common.custom_view.LoadingDialog;
 import com.ttt.chat_module.common.custom_view.PasswordEditText;
+import com.ttt.chat_module.common.utils.UserAuth;
 import com.ttt.chat_module.presenters.auth.login.LoginPresenter;
 import com.ttt.chat_module.presenters.auth.login.LoginPresenterImpl;
 import com.ttt.chat_module.views.auth.register.RegisterActivity;
@@ -56,14 +55,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     protected void initData(Bundle saveInstanceState) {
         btnSignIn.setOnClickListener(this);
         txtCreateNewAccount.setOnClickListener(this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(FirebaseAuth.getInstance().getCurrentUser() != null) {
-            navigateToHomeScreen();
-        }
     }
 
     @Override
@@ -125,9 +116,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
             case REQUEST_CODE_CREATE_NEW_ACCOUNT: {
                 if (resultCode == RESULT_OK) {
                     String email = data.getStringExtra(Constants.KEY_EMAIL);
-                    String password = data.getStringExtra(Constants.KEY_PASSWORD);
                     edtEmail.setText(email);
-                    edtPassword.setText(password);
                 }
             }
             break;

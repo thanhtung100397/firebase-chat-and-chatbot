@@ -1,6 +1,5 @@
 package com.ttt.chat_module.presenters.main.friends;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.ttt.chat_module.common.Constants;
@@ -16,20 +15,17 @@ import java.util.List;
 public class FriendsPresenterImpl implements FriendsPresenter {
     private static final String TAG = "FriendsPresenterImpl";
 
-    private Context context;
     private FriendsView friendsView;
     private FriendsInteractor friendsInteractor;
     private int currentPage = 0;
 
-    public FriendsPresenterImpl(Context context, FriendsView friendsView) {
-        this.context = context;
+    public FriendsPresenterImpl(FriendsView friendsView) {
         this.friendsView = friendsView;
         friendsInteractor = new FriendsInteractorImpl();
     }
 
     @Override
     public void onViewDestroy() {
-        context = null;
         friendsInteractor.onViewDestroy();
     }
 

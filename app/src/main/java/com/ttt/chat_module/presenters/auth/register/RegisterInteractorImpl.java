@@ -38,7 +38,7 @@ public class RegisterInteractorImpl implements RegisterInteractor {
         FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION)
                 .document(email)
                 .set(new User(email, firstName, lastName))
-                .addOnSuccessListener(documentReference -> listener.onRegisterSuccess(email, password))
+                .addOnSuccessListener(documentReference -> listener.onRegisterSuccess(email))
                 .addOnFailureListener(e -> listener.onError(e.getMessage()));
     }
 }

@@ -11,7 +11,7 @@ import android.view.ViewGroup;
  */
 
 public abstract class EndlessLoadingRecyclerViewAdapter extends RecyclerViewAdapter {
-    public static final int VIEW_TYPE_LOADING = 1;
+    public static final int VIEW_TYPE_LOADING = -1;
 
     private OnLoadingMoreListener loadingMoreListener;
     private boolean disableLoadMore = false;

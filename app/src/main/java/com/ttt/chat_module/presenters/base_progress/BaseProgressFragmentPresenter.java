@@ -1,4 +1,4 @@
-package com.ttt.chat_module.presenters.base_progress_fragment;
+package com.ttt.chat_module.presenters.base_progress;
 
 import android.os.Bundle;
 
@@ -13,8 +13,8 @@ public abstract class BaseProgressFragmentPresenter implements BasePresenter {
     public abstract void fetchData(OnFetchDataProgressListener listener);
 
     public interface OnFetchDataProgressListener {
-        void onFetchDataStart();
         void onFetchDataSuccess(Bundle args);
+
         void onFetchDataFailure(String messsage);
     }
 }

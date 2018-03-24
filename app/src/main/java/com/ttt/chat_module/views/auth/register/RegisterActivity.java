@@ -99,10 +99,9 @@ public class RegisterActivity extends BaseActivity<RegisterPresenter> implements
     }
 
     @Override
-    public void navigateToLoginScreen(String email, String password) {
+    public void navigateToLoginScreen(String email) {
         Intent intent = new Intent();
         intent.putExtra(Constants.KEY_EMAIL, email);
-        intent.putExtra(Constants.KEY_PASSWORD, password);
         setResult(RESULT_OK, intent);
         finish();
     }

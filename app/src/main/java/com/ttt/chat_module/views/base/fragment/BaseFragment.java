@@ -15,7 +15,7 @@ import com.ttt.chat_module.presenters.BasePresenter;
 public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
     private T presenter;
 
-    protected abstract int getLayoutResource();
+    protected abstract int getLayoutResources();
 
     protected abstract void initVariables(Bundle saveInstanceState, View rootView);
 
@@ -29,11 +29,10 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(getLayoutResource(), container, false);
+        View rootView = inflater.inflate(getLayoutResources(), container, false);
+        presenter = initPresenter();
         initVariables(savedInstanceState, rootView);
         initData(savedInstanceState);
-
-        presenter = initPresenter();
         return rootView;
     }
 }

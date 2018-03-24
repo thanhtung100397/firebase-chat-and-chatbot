@@ -55,7 +55,7 @@ public class LoginPresenterImpl implements LoginPresenter {
             @Override
             public void onLoginSuccess() {
                 loginView.hideProgress();
-                UserAuth.saveUserID(context, trimEmail);
+                UserAuth.saveLoginState(context, trimEmail);
                 loginView.navigateToHomeScreen();
             }
 
@@ -72,6 +72,5 @@ public class LoginPresenterImpl implements LoginPresenter {
                 ToastUtils.quickToast(context, R.string.unexpected_error_occurred);
             }
         });
-
     }
 }

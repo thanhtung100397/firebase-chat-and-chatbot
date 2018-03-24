@@ -51,9 +51,9 @@ public class ListFriendsAdapter extends EndlessLoadingRecyclerViewAdapter {
                 .load(user.getAvatarUrl())
                 .placeholder(R.drawable.avatar_placeholder)
                 .into(itemFriendViewHolder.imgAvatar);
-        itemFriendViewHolder.txtName.setText(user.getFirstName());
+        itemFriendViewHolder.txtName.setText(user.getLastName() + " " + user.getFirstName());
         itemFriendViewHolder.txtEmail.setText(user.getEmail());
-        itemFriendViewHolder.imgOnline.setVisibility(user.isOnline() ? View.VISIBLE : View.GONE);
+        itemFriendViewHolder.imgOnline.setVisibility(user.getIsOnline() ? View.VISIBLE : View.GONE);
     }
 
     class ItemFriendViewHolder extends NormalViewHolder {

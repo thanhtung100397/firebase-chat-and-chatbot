@@ -4,7 +4,9 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/selectableItemBackground"
-    android:padding="@dimen/item_padding">
+    android:padding="@dimen/item_padding"
+    android:clickable="true"
+    android:focusable="true">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/img_avatar"
@@ -29,7 +31,7 @@
         android:id="@+id/txt_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/font_size_16sp"
+        android:textSize="@dimen/font_size_18dp"
         android:textColor="@android:color/black"
         android:text="Tran Thanh Tung"
         android:layout_toRightOf="@id/img_avatar"/>
@@ -38,10 +40,10 @@
         android:id="@+id/txt_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/font_size_13sp"
+        android:layout_below="@+id/txt_name"
+        android:layout_toEndOf="@+id/img_avatar"
+        android:layout_toRightOf="@+id/img_avatar"
         android:text="thanhtung100397@gmail.com"
-        android:layout_below="@id/txt_name"
-        android:layout_alignLeft="@id/txt_name"
-        android:layout_alignStart="@id/txt_name" />
+        android:textSize="@dimen/font_size_14dp" />
 
 </RelativeLayout>

@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ttt.chat_module.R;
-import com.ttt.chat_module.presenters.base_progress_fragment.BaseProgressFragmentPresenter;
+import com.ttt.chat_module.presenters.base_progress.BaseProgressFragmentPresenter;
 import com.ttt.chat_module.views.base.LoadingFragment;
 
 /**
@@ -57,6 +57,7 @@ public abstract class BaseProgressFragment extends Fragment implements BaseProgr
     private void initLoadingFragment() {
         loadingFragment = new LoadingFragment();
         loadingFragment.setOnRetryListener(loadingFragment -> {
+            loadingFragment.showProgress();
             getPresenter().fetchData(this);
         });
     }
@@ -80,11 +81,6 @@ public abstract class BaseProgressFragment extends Fragment implements BaseProgr
         if (presenter != null) {
             presenter.onViewDestroy();
         }
-    }
-
-    @Override
-    public void onFetchDataStart() {
-        loadingFragment.showProgress();
     }
 
     @Override
