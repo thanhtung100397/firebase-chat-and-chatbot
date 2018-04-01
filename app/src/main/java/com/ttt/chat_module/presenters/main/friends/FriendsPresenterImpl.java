@@ -1,7 +1,6 @@
 package com.ttt.chat_module.presenters.main.friends;
 
-import android.util.Log;
-
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.views.main.friends.FriendsView;
@@ -13,11 +12,10 @@ import java.util.List;
  */
 
 public class FriendsPresenterImpl implements FriendsPresenter {
-    private static final String TAG = "FriendsPresenterImpl";
-
     private FriendsView friendsView;
     private FriendsInteractor friendsInteractor;
-    private int currentPage = 0;
+    private boolean hasNoFriendLeft;
+    private DocumentSnapshot lastFriendDocumentSnapshot;
 
     public FriendsPresenterImpl(FriendsView friendsView) {
         this.friendsView = friendsView;
@@ -32,23 +30,27 @@ public class FriendsPresenterImpl implements FriendsPresenter {
     @Override
     public void refreshFriends() {
         friendsView.showRefreshingProgress();
-        friendsInteractor.getFriends(0, Constants.PAGE_SIZE,
+        friendsView.enableLoadingMore(false);
+        friendsInteractor.getFriends(null, Constants.PAGE_SIZE,
                 new OnGetFriendsCompleteListener() {
                     @Override
                     public void onGetFriendsSuccess(List<User> users) {
-                        currentPage = 0;
-                        if (users.size() < Constants.PAGE_SIZE) {
-                            friendsView.enableLoadingMore(false);
-                        } else {
-                            friendsView.enableLoadingMore(true);
-                        }
+                        friendsView.enableLoadingMore(true);
                         friendsView.hideRefreshingProgress();
                         friendsView.refreshUsers(users);
                     }
 
                     @Override
-                    public void onError(String message) {
-                        Log.i(TAG, "onError: " + message);
+                    public void onLastElementFetched(DocumentSnapshot element, boolean hasNoElementLeft) {
+                        friendsView.enableLoadingMore(true);
+                        friendsView.hideRefreshingProgress();
+                        lastFriendDocumentSnapshot = element;
+                        hasNoFriendLeft = hasNoElementLeft;
+                    }
+
+                    @Override
+                    public void onRequestError(String message) {
+                        friendsView.enableLoadingMore(true);
                         friendsView.hideRefreshingProgress();
                     }
                 });
@@ -56,24 +58,38 @@ public class FriendsPresenterImpl implements FriendsPresenter {
 
     @Override
     public void loadMoreFriends() {
+        if(hasNoFriendLeft) {
+            return;
+        }
+        friendsView.enableRefreshing(false);
         friendsView.showLoadingMoreProgress();
-        friendsInteractor.getFriends(currentPage + 1, Constants.PAGE_SIZE,
+        friendsInteractor.getFriends(lastFriendDocumentSnapshot, Constants.PAGE_SIZE,
                 new OnGetFriendsCompleteListener() {
                     @Override
                     public void onGetFriendsSuccess(List<User> users) {
-                        currentPage++;
-                        if (users.size() < Constants.PAGE_SIZE) {
-                            friendsView.enableLoadingMore(false);
-                        }
+                        friendsView.enableRefreshing(true);
                         friendsView.hideLoadingMoreProgress();
                         friendsView.addMoreUsers(users);
                     }
 
                     @Override
-                    public void onError(String message) {
-                        Log.i(TAG, "onError: " + message);
+                    public void onLastElementFetched(DocumentSnapshot element, boolean hasNoElementLeft) {
+                        friendsView.enableRefreshing(true);
                         friendsView.hideLoadingMoreProgress();
+                        lastFriendDocumentSnapshot = element;
+                        hasNoFriendLeft = hasNoElementLeft;
+                    }
+
+                    @Override
+                    public void onRequestError(String message) {
+                        friendsView.hideLoadingMoreProgress();
+                        friendsView.enableRefreshing(true);
                     }
                 });
+    }
+
+    @Override
+    public void setHasNoFriendLeft(boolean value) {
+        this.hasNoFriendLeft = value;
     }
 }

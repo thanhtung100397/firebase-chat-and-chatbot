@@ -3,18 +3,40 @@ package com.ttt.chat_module.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
+
 /**
  * Created by TranThanhTung on 18/03/2018.
  */
 
-public class UserInfo implements Parcelable{
+public class UserInfo implements Parcelable, Serializable{
+    public static final String ID = "id";
+
+    private String id;
     private String email;
     private String firstName;
     private String lastName;
     private String avatarUrl;
     private String coverUrl;
 
+    public UserInfo(User user) {
+        setId(user.getId());
+        setEmail(user.getEmail());
+        setFirstName(user.getFirstName());
+        setLastName(user.getLastName());
+        setAvatarUrl(user.getAvatarUrl());
+        setCoverUrl(user.getCoverUrl());
+    }
+
     public UserInfo() {
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getEmail() {
@@ -58,6 +80,7 @@ public class UserInfo implements Parcelable{
     }
 
     protected UserInfo(Parcel in) {
+        id = in.readString();
         email = in.readString();
         firstName = in.readString();
         lastName = in.readString();
@@ -67,6 +90,7 @@ public class UserInfo implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeString(email);
         dest.writeString(firstName);
         dest.writeString(lastName);

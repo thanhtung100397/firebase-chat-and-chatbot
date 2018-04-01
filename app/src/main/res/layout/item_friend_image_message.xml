@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/small_padding">
+
+    <TextView
+        android:id="@+id/txt_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/txt_message"
+        android:layout_alignStart="@id/txt_message"
+        android:layout_marginTop="@dimen/tiny_padding"
+        android:layout_marginRight="@dimen/small_padding"
+        android:layout_marginLeft="@dimen/small_padding"
+        android:text="dd/MM/yyyy at hh:mm"
+        android:textSize="@dimen/font_size_10dp"
+        android:visibility="gone"
+        android:layout_marginBottom="@dimen/tiny_padding"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="@dimen/tiny_avatar_size"
+        android:layout_height="@dimen/tiny_avatar_size"
+        android:layout_marginEnd="@dimen/small_padding"
+        android:layout_marginRight="@dimen/small_padding"
+        android:src="@drawable/avatar_placeholder"
+        android:layout_below="@id/txt_time" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rc_images"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/img_avatar"
+        android:layout_toRightOf="@id/img_avatar"
+        android:paddingBottom="@dimen/small_padding"
+        android:paddingLeft="@dimen/edit_text_padding"
+        android:paddingRight="@dimen/edit_text_padding"
+        android:paddingTop="@dimen/small_padding"
+        android:layout_alignTop="@id/img_avatar"
+        android:background="@drawable/item_message_sent_background"
+        android:layout_below="@id/txt_time"/>
+
+    <TextView
+        android:id="@+id/txt_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rc_images"
+        android:layout_marginRight="@dimen/small_padding"
+        android:layout_marginLeft="@dimen/small_padding"
+        android:layout_alignRight="@id/rc_images"
+        android:text="@string/seen"
+        android:textSize="@dimen/font_size_10dp"
+        android:visibility="gone" />
+</RelativeLayout>
+

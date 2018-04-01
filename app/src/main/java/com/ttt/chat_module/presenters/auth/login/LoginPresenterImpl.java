@@ -7,8 +7,8 @@ import android.util.Patterns;
 import com.ttt.chat_module.R;
 import com.ttt.chat_module.common.utils.ToastUtils;
 import com.ttt.chat_module.common.utils.UserAuth;
+import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.views.auth.login.LoginView;
-
 
 /**
  * Created by TranThanhTung on 19/02/2018.
@@ -53,9 +53,9 @@ public class LoginPresenterImpl implements LoginPresenter {
         loginView.showProgress();
         loginInteractor.login(trimEmail, password, new OnLoginCompleteListener() {
             @Override
-            public void onLoginSuccess() {
+            public void onLoginSuccess(User user) {
+                UserAuth.saveUser(context, user);
                 loginView.hideProgress();
-                UserAuth.saveLoginState(context, trimEmail);
                 loginView.navigateToHomeScreen();
             }
 
@@ -66,8 +66,7 @@ public class LoginPresenterImpl implements LoginPresenter {
             }
 
             @Override
-            public void onError(String message) {
-                Log.i(TAG, "onError: " + message);
+            public void onRequestError(String message) {
                 loginView.hideProgress();
                 ToastUtils.quickToast(context, R.string.unexpected_error_occurred);
             }

@@ -1,5 +1,6 @@
 package com.ttt.chat_module.presenters.main.friends;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.ttt.chat_module.presenters.BaseInteractor;
 
 /**
@@ -7,5 +8,5 @@ import com.ttt.chat_module.presenters.BaseInteractor;
  */
 
 public interface FriendsInteractor extends BaseInteractor {
-    void getFriends(int pageIndex, int pageSize, OnGetFriendsCompleteListener listener);
+    void getFriends(DocumentSnapshot startAt, int pageSize, OnGetFriendsCompleteListener listener);
 }

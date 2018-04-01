@@ -6,37 +6,38 @@ import android.content.SharedPreferences;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.ttt.chat_module.common.Constants;
+import com.ttt.chat_module.models.User;
 
 /**
  * Created by TranThanhTung on 20/02/2018.
  */
 
 public class UserAuth {
-    public static final String USER_SHARE_PREFERENCES = "user_prefs";
 
     public static String getUserID() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if(firebaseUser != null) {
-            return firebaseUser.getEmail();
+            return firebaseUser.getUid();
         }
         return null;
     }
 
+    public static User getUser(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_INFO_SHARE_PREFS, Context.MODE_PRIVATE);
+        return new User(sharedPreferences);
+    }
+
+    public static void saveUser(Context context, User user) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_INFO_SHARE_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if(user == null) {
+            user = new User();
+        }
+        user.writeToSharePreferences(editor);
+        editor.apply();
+    }
+
     public static boolean isUserLoggedIn() {
         return FirebaseAuth.getInstance().getCurrentUser() != null;
-    }
-
-    public static void saveLoginState(Context context, String userID) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(USER_SHARE_PREFERENCES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(Constants.KEY_USER_EMAIL, userID);
-        editor.apply();
-    }
-
-    public static void saveLogoutState(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(USER_SHARE_PREFERENCES, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(Constants.KEY_USER_EMAIL, null);
-        editor.apply();
     }
 }

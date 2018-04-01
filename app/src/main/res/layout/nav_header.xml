@@ -20,8 +20,8 @@
 
         <ImageView
             android:id="@+id/img_firebase"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:contentDescription="@string/image_description"
             android:scaleType="centerInside"
             android:src="@drawable/firebase_logo"/>
@@ -31,6 +31,6 @@
             android:layout_height="wrap_content"
             android:text="@string/firebase"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/font_size_40dp"/>
+            android:textSize="35dp"/>
     </LinearLayout>
 </RelativeLayout>

@@ -1,7 +1,6 @@
 package com.ttt.chat_module.views.splash;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.ttt.chat_module.R;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.utils.UserAuth;
+import com.ttt.chat_module.common.utils.Utils;
 import com.ttt.chat_module.presenters.splash.SplashPresenter;
 import com.ttt.chat_module.presenters.splash.SplashPresenterImpl;
 import com.ttt.chat_module.views.auth.login.LoginActivity;
@@ -44,7 +44,11 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     @Override
     protected void initData(Bundle savedInstanceState) {
         if (UserAuth.isUserLoggedIn()) {
-            getPresenter().goToOnlineState();
+            if(Utils.isInternetAvailable(this)) {
+                getPresenter().goToOnlineState();
+            } else {
+                completeLoading();
+            }
             splashTimer = new SplashTimer().execute();
         } else {
             Intent intent = new Intent(this, LoginActivity.class);
@@ -72,7 +76,7 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(!splashTimer.isCancelled()) {
+        if(splashTimer != null && !splashTimer.isCancelled()) {
             splashTimer.cancel(true);
             splashTimer = null;
         }
@@ -94,7 +98,6 @@ public class SplashActivity extends BaseActivity<SplashPresenter> implements Spl
                     publishProgress(progress);
                     Thread.sleep(millisPerProgress);
                 }
-                while (!isRequestSuccess);
                 while (progress <= 100) {
                     progress++;
                     publishProgress(progress);

@@ -23,7 +23,7 @@ public abstract class EndlessLoadingRecyclerViewAdapter extends RecyclerViewAdap
 
     public void setLoadingMoreListener(OnLoadingMoreListener loadingMoreListener) {
         this.loadingMoreListener = loadingMoreListener;
-        enableLoadingMore(loadingMoreListener == null);
+        enableLoadingMore(loadingMoreListener != null);
     }
 
     @Override
@@ -42,8 +42,10 @@ public abstract class EndlessLoadingRecyclerViewAdapter extends RecyclerViewAdap
                         int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
                         int lastVisibleItemPosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
                         if (firstVisibleItemPosition > 0 && lastVisibleItemPosition == getItemCount() - 1) {
-                            isLoading = true;
-                            loadingMoreListener.onLoadMore();
+                            if(loadingMoreListener != null) {
+                                isLoading = true;
+                                loadingMoreListener.onLoadMore();
+                            }
                         }
                     }
                     break;

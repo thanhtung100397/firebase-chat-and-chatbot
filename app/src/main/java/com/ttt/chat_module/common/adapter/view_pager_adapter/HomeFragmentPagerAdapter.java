@@ -5,9 +5,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.ttt.chat_module.R;
-import com.ttt.chat_module.views.main.account.AccountProgressFragment;
-import com.ttt.chat_module.views.main.friends.FriendsProgressFragment;
-import com.ttt.chat_module.views.main.home.HomeProgressFragment;
+import com.ttt.chat_module.views.main.account.AccountFragment;
+import com.ttt.chat_module.views.main.friends.FriendsFragment;
+import com.ttt.chat_module.views.main.home.HomeFragment;
 
 /**
  * Created by TranThanhTung on 20/02/2018.
@@ -24,9 +24,9 @@ public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         fragments = new Fragment[3];
 
-        fragments[HOME_FRAGMENT_POSITION] = new HomeProgressFragment();
-        fragments[FRIENDS_FRAGMENT_POSITION] = new FriendsProgressFragment();
-        fragments[PROFILE_FRAGMENT_POSITION] = new AccountProgressFragment();
+        fragments[HOME_FRAGMENT_POSITION] = new HomeFragment();
+        fragments[FRIENDS_FRAGMENT_POSITION] = new FriendsFragment();
+        fragments[PROFILE_FRAGMENT_POSITION] = new AccountFragment();
     }
 
     @Override

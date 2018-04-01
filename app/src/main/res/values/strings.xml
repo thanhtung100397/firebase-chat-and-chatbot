@@ -34,5 +34,11 @@
     <string name="error_occurred">Error occurred</string>
     <string name="sent">sent</string>
     <string name="logout">Logout</string>
-    <string name="logout_failure">logout failure, please try again</string>
+    <string name="logout_failure">logout failed, please try again</string>
+    <string name="sent_message_failed">Send message failed</string>
+    <string name="fetching">fetching...</string>
+    <string name="active_now">Active now</string>
+    <string name="offline">Offline</string>
+    <string name="pick_image">Pick image</string>
+    <string name="must_pick_one_image">Please pick atleast 1 image</string>
 </resources>

@@ -9,8 +9,9 @@
     <dimen name="font_size_20dp">20dp</dimen>
     <dimen name="font_size_22dp">22dp</dimen>
     <dimen name="edit_text_margin_bottom">16dp</dimen>
-    <dimen name="font_size_40dp">48dp</dimen>
+    <dimen name="font_size_40dp">40dp</dimen>
     <dimen name="small_avatar_size">56dp</dimen>
+    <dimen name="tiny_avatar_size">32dp</dimen>
     <dimen name="dot_size">17dp</dimen>
     <dimen name="edit_text_max_width">180dp</dimen>
     <dimen name="font_size_14dp">14dp</dimen>
@@ -22,4 +23,5 @@
     <dimen name="font_size_10dp">10dp</dimen>
     <dimen name="font_size_15dp">15dp</dimen>
     <dimen name="font_size_50dp">50dp</dimen>
+    <dimen name="tiny_padding">2dp</dimen>
 </resources>

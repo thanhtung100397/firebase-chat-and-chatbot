@@ -164,6 +164,10 @@ public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     }
 
     public void updateModel(int position, Object model, boolean isScroll) {
+        Object updatedModel = getListWrapperModels().get(position).model;
+        if(updatedModel.equals(model)) {
+            return;
+        }
         getListWrapperModels().get(position).model = model;
         notifyItemChanged(position);
         if (isScroll) {

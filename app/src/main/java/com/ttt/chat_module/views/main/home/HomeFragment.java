@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.ttt.chat_module.R;
-import com.ttt.chat_module.presenters.BasePresenter;
+import com.ttt.chat_module.presenters.main.home.HomePresenter;
 import com.ttt.chat_module.views.base.fragment.BaseFragment;
 
 import butterknife.BindView;
@@ -15,7 +15,7 @@ import butterknife.ButterKnife;
  * Created by TranThanhTung on 19/02/2018.
  */
 
-public class HomeFragment extends BaseFragment implements HomeFragmentView {
+public class HomeFragment extends BaseFragment<HomePresenter> implements HomeView {
     @BindView(R.id.rc_messages)
     RecyclerView rcMessages;
 
@@ -36,7 +36,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentView {
     }
 
     @Override
-    protected BasePresenter initPresenter() {
+    protected HomePresenter initPresenter() {
         return null;
     }
 }

@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                     @Override
                     public void onRequestSuccess() {
                         FirebaseAuth.getInstance().signOut();
-                        UserAuth.saveLogoutState(MainActivity.this);
+                        UserAuth.saveUser(MainActivity.this, null);
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         loadingDialog.dismiss();
                         finish();

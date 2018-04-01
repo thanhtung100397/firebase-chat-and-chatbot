@@ -16,12 +16,12 @@ import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerVi
 import com.ttt.chat_module.common.recycler_view_adapter.RecyclerViewAdapter;
 import com.ttt.chat_module.common.utils.UserAuth;
 import com.ttt.chat_module.models.User;
-import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.presenters.main.friends.FriendsPresenter;
 import com.ttt.chat_module.presenters.main.friends.FriendsPresenterImpl;
 import com.ttt.chat_module.views.base.fragment.BaseFragment;
 import com.ttt.chat_module.views.chat.activity.ChatActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -64,17 +64,7 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
         rcFriends.setLayoutManager(linearLayoutManager);
         rcFriends.setAdapter(listFriendsAdapter);
 
-        Bundle args = getArguments();
-        if (args == null) {
-            return;
-        }
-
-        List<User> users = args.getParcelableArrayList(Constants.KEY_USERS);
-        if (users == null) {
-            getPresenter().refreshFriends();
-        } else {
-            listFriendsAdapter.addModels(users, false);
-        }
+        getPresenter().refreshFriends();
     }
 
     @Override
@@ -136,11 +126,10 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
     public void onItemClick(RecyclerView.Adapter adapter, RecyclerView.ViewHolder viewHolder, int viewType, int position) {
         Context context = getActivity();
         Intent intent = new Intent(context, ChatActivity.class);
-        String[] userIDs = new String[2];
-        userIDs[0] = UserAuth.getUserID();
-        User friend = listFriendsAdapter.getItem(position, User.class);
-        userIDs[1] = friend.getEmail();
-        intent.putExtra(Constants.KEY_USER_IDS, userIDs);
+        ArrayList<User> users = new ArrayList<>(2);
+        users.add(UserAuth.getUser(context));
+        users.add(listFriendsAdapter.getItem(position, User.class));
+        intent.putParcelableArrayListExtra(Constants.KEY_USERS, users);
 
         context.startActivity(intent);
     }

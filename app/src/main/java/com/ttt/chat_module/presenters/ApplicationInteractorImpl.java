@@ -16,7 +16,8 @@ public class ApplicationInteractorImpl implements ApplicationInteractor {
 
     @Override
     public void updateUserOnlineState(String userID, boolean isOnline, OnRequestCompleteListener listener) {
-        FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION)
+        FirebaseFirestore.getInstance()
+                .collection(Constants.USERS_COLLECTION)
                 .document(userID)
                 .update(User.IS_ONLINE, isOnline)
                 .addOnSuccessListener(aVoid -> {

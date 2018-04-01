@@ -1,7 +1,6 @@
 package com.ttt.chat_module.presenters.auth.register;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Patterns;
 
 import com.ttt.chat_module.R;
@@ -92,8 +91,7 @@ public class RegisterPresenterImpl implements RegisterPresenter {
             }
 
             @Override
-            public void onError(String message) {
-                Log.i(TAG, "onError: " + message);
+            public void onRequestError(String message) {
                 registerView.hideProgress();
                 ToastUtils.quickToast(context, R.string.unexpected_error_occurred);
             }

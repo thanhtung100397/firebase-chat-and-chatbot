@@ -26,7 +26,7 @@ public class ApplicationPresenterImpl implements ApplicationPresenter {
     public void changeOnlineState(boolean isOnline, OnRequestCompleteListener listener) {
         String userID = UserAuth.getUserID();
         if (userID != null) {
-            applicationInteractor.updateUserOnlineState(UserAuth.getUserID(), isOnline, listener);
+            applicationInteractor.updateUserOnlineState(userID, isOnline, listener);
         }
     }
 }

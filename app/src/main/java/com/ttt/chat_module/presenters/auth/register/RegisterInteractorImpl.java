@@ -21,7 +21,7 @@ public class RegisterInteractorImpl implements RegisterInteractor {
     public void register(String email, String password, String firstName, String lastName, OnRegisterCompleteListener listener) {
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(authResult -> {
-                    saveUserData(email, password, firstName, lastName, listener);
+                    saveUserData(authResult.getUser().getUid(), email, firstName, lastName, listener);
                 })
                 .addOnFailureListener(e -> {
                     if (e instanceof FirebaseAuthUserCollisionException) {
@@ -29,16 +29,16 @@ public class RegisterInteractorImpl implements RegisterInteractor {
                     } else if (e instanceof FirebaseAuthWeakPasswordException) {
                         listener.onPasswordWeek();
                     } else {
-                        listener.onError(e.getMessage());
+                        listener.onRequestError(e.getMessage());
                     }
                 });
     }
 
-    private void saveUserData(String email, String password, String firstName, String lastName, OnRegisterCompleteListener listener) {
+    private void saveUserData(String id, String email, String firstName, String lastName, OnRegisterCompleteListener listener) {
         FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION)
-                .document(email)
-                .set(new User(email, firstName, lastName))
+                .document(id)
+                .set(new User(id, email, firstName, lastName))
                 .addOnSuccessListener(documentReference -> listener.onRegisterSuccess(email))
-                .addOnFailureListener(e -> listener.onError(e.getMessage()));
+                .addOnFailureListener(e -> listener.onRequestError(e.getMessage()));
     }
 }

@@ -9,4 +9,5 @@ import com.ttt.chat_module.presenters.BasePresenter;
 public interface FriendsPresenter extends BasePresenter {
     void refreshFriends();
     void loadMoreFriends();
+    void setHasNoFriendLeft(boolean value);
 }

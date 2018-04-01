@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/small_padding">
+
+    <TextView
+        android:id="@+id/txt_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/tiny_padding"
+        android:layout_marginRight="@dimen/small_padding"
+        android:layout_marginLeft="@dimen/small_padding"
+        android:text="dd/MM/yyyy hh:mm"
+        android:textSize="@dimen/font_size_10dp"
+        android:visibility="visible" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rc_images"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/small_padding"
+        android:paddingLeft="@dimen/edit_text_padding"
+        android:paddingRight="@dimen/edit_text_padding"
+        android:paddingTop="@dimen/small_padding"
+        android:background="@drawable/item_message_background"
+        android:layout_below="@id/txt_time"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/txt_seen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rc_images"
+        android:layout_marginRight="@dimen/small_padding"
+        android:layout_marginLeft="@dimen/small_padding"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/seen"
+        android:textSize="@dimen/font_size_10dp"
+        android:visibility="visible" />
+</RelativeLayout>
+

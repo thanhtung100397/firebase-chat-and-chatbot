@@ -5,7 +5,6 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ProcessLifecycleOwner;
-import android.content.ComponentCallbacks2;
 
 import com.ttt.chat_module.presenters.ApplicationPresenter;
 import com.ttt.chat_module.presenters.main.ApplicationPresenterImpl;

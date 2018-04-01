@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.2"
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.ttt.chat_module"
         minSdkVersion 16
@@ -54,6 +54,7 @@ dependencies {
     compile 'com.google.firebase:firebase-core:11.8.0'
     compile 'com.google.firebase:firebase-messaging:11.8.0'
     compile 'com.google.firebase:firebase-firestore:11.8.0'
+    compile 'com.google.firebase:firebase-storage:11.8.0'
     compile 'com.wang.avi:library:2.1.3'
 
     // retrofit
@@ -83,6 +84,9 @@ dependencies {
     //android architecture
     implementation "android.arch.lifecycle:extensions:1.1.1"
     annotationProcessor "android.arch.lifecycle:compiler:1.1.1"
+
+    //image picker
+    implementation 'com.sangcomz:FishBun:0.8.6'
 
     testCompile 'junit:junit:4.12'
 }

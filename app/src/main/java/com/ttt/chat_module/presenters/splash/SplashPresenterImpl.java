@@ -1,5 +1,7 @@
 package com.ttt.chat_module.presenters.splash;
 
+import android.util.Log;
+
 import com.ttt.chat_module.common.utils.UserAuth;
 import com.ttt.chat_module.presenters.OnRequestCompleteListener;
 import com.ttt.chat_module.views.splash.SplashView;
@@ -31,6 +33,7 @@ public class SplashPresenterImpl implements SplashPresenter {
 
             @Override
             public void onRequestError(String message) {
+                Log.i("ABC", "onRequestError: "+message);
                 splashView.showErrorDialog();
             }
         });
