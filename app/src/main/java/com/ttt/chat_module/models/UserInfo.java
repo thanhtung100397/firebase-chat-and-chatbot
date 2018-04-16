@@ -1,7 +1,11 @@
 package com.ttt.chat_module.models;
 
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.Serializable;
 
@@ -11,13 +15,18 @@ import java.io.Serializable;
 
 public class UserInfo implements Parcelable, Serializable{
     public static final String ID = "id";
+    public static final String EMAIL = "email";
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+    public static final String AVATAR_URL = "avatarUrl";
 
     private String id;
     private String email;
     private String firstName;
     private String lastName;
     private String avatarUrl;
-    private String coverUrl;
+    private boolean isOnline;
+    private String fcmToken;
 
     public UserInfo(User user) {
         setId(user.getId());
@@ -25,10 +34,30 @@ public class UserInfo implements Parcelable, Serializable{
         setFirstName(user.getFirstName());
         setLastName(user.getLastName());
         setAvatarUrl(user.getAvatarUrl());
-        setCoverUrl(user.getCoverUrl());
+        setIsOnline(user.getIsOnline());
+        setFcmToken(user.getFcmToken());
+    }
+
+    public UserInfo(SharedPreferences sharedPreferences) {
+        setId(sharedPreferences.getString(ID, null));
+        setEmail(sharedPreferences.getString(EMAIL, null));
+        setFirstName(sharedPreferences.getString(FIRST_NAME, null));
+        setLastName(sharedPreferences.getString(LAST_NAME, null));
+        setAvatarUrl(sharedPreferences.getString(AVATAR_URL, null));
+        setFcmToken(FirebaseInstanceId.getInstance().getToken());
     }
 
     public UserInfo() {
+    }
+
+    public void update(UserInfo userInfo) {
+        setId(userInfo.getId());
+        setEmail(userInfo.getEmail());
+        setFirstName(userInfo.getFirstName());
+        setLastName(userInfo.getLastName());
+        setAvatarUrl(userInfo.getAvatarUrl());
+        setIsOnline(userInfo.getIsOnline());
+        setFcmToken(userInfo.getFcmToken());
     }
 
     public void setId(String id) {
@@ -71,12 +100,21 @@ public class UserInfo implements Parcelable, Serializable{
         this.avatarUrl = avatarUrl;
     }
 
-    public String getCoverUrl() {
-        return coverUrl;
+    @Exclude
+    public boolean getIsOnline() {
+        return isOnline;
     }
 
-    public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
+    public void setIsOnline(boolean isOnline) {
+        this.isOnline = isOnline;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
     protected UserInfo(Parcel in) {
@@ -85,7 +123,8 @@ public class UserInfo implements Parcelable, Serializable{
         firstName = in.readString();
         lastName = in.readString();
         avatarUrl = in.readString();
-        coverUrl = in.readString();
+        isOnline = in.readByte() != 0;
+        fcmToken = in.readString();
     }
 
     @Override
@@ -95,7 +134,8 @@ public class UserInfo implements Parcelable, Serializable{
         dest.writeString(firstName);
         dest.writeString(lastName);
         dest.writeString(avatarUrl);
-        dest.writeString(coverUrl);
+        dest.writeByte((byte) (isOnline ? 1 : 0));
+        dest.writeString(fcmToken);
     }
 
     @Override

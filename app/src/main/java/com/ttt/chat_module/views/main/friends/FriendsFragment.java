@@ -10,19 +10,25 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.ttt.chat_module.R;
+import com.ttt.chat_module.bus_event.UserOnlineStateChangeEvent;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.adapter.recycler_view_adapter.ListFriendsAdapter;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.ttt.chat_module.common.recycler_view_adapter.RecyclerViewAdapter;
 import com.ttt.chat_module.common.utils.UserAuth;
-import com.ttt.chat_module.models.User;
+import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.presenters.main.friends.FriendsPresenter;
 import com.ttt.chat_module.presenters.main.friends.FriendsPresenterImpl;
 import com.ttt.chat_module.views.base.fragment.BaseFragment;
 import com.ttt.chat_module.views.chat.activity.ChatActivity;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +71,18 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
         rcFriends.setAdapter(listFriendsAdapter);
 
         getPresenter().refreshFriends();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUserOnlineStateChangeEvent(UserOnlineStateChangeEvent event) {
+        listFriendsAdapter.updateOnlineState(event.getUserID(), event.isOnline());
     }
 
     @Override
@@ -113,23 +131,23 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
     }
 
     @Override
-    public void refreshUsers(List<User> users) {
-        listFriendsAdapter.refresh(users);
+    public void refreshUsers(Map<String, Integer> userPositionMap, List<UserInfo> usersInfo) {
+        listFriendsAdapter.refreshFriends(userPositionMap, usersInfo);
     }
 
     @Override
-    public void addMoreUsers(List<User> users) {
-        listFriendsAdapter.addModels(users, false);
+    public void addMoreUsers(Map<String, Integer> userPositionMap, List<UserInfo> usersInfo) {
+        listFriendsAdapter.addFriends(userPositionMap, usersInfo);
     }
 
     @Override
     public void onItemClick(RecyclerView.Adapter adapter, RecyclerView.ViewHolder viewHolder, int viewType, int position) {
         Context context = getActivity();
         Intent intent = new Intent(context, ChatActivity.class);
-        ArrayList<User> users = new ArrayList<>(2);
-        users.add(UserAuth.getUser(context));
-        users.add(listFriendsAdapter.getItem(position, User.class));
-        intent.putParcelableArrayListExtra(Constants.KEY_USERS, users);
+        ArrayList<UserInfo> usersInfo = new ArrayList<>(2);
+        usersInfo.add(UserAuth.getUserInfo(context));
+        usersInfo.add(listFriendsAdapter.getItem(position, UserInfo.class));
+        intent.putParcelableArrayListExtra(Constants.KEY_USERS_INFO, usersInfo);
 
         context.startActivity(intent);
     }

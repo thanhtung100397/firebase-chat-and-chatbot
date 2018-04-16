@@ -33,7 +33,7 @@ import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.adapter.recycler_view_adapter.ChatMessageAdapter;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.ttt.chat_module.models.ChatRoomInfo;
-import com.ttt.chat_module.models.message_models.TextMessage;
+import com.ttt.chat_module.models.message_models.BaseMessage;
 import com.ttt.chat_module.common.custom_view.ClearableEditText;
 import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.presenters.chat.fragment.ChatFragmentPresenter;
@@ -47,11 +47,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 import java.util.Map;
 
-import bus_event.AllImageItemsUploadCompleteEvent;
-import bus_event.ImageItemStartUploadingEvent;
-import bus_event.ImageItemUploadFailureEvent;
-import bus_event.ImageItemUploadSuccessEvent;
-import bus_event.SendImageMessageFailureEvent;
+import com.ttt.chat_module.bus_event.ImageItemStartUploadingEvent;
+import com.ttt.chat_module.bus_event.ImageItemUploadFailureEvent;
+import com.ttt.chat_module.bus_event.ImageItemUploadSuccessEvent;
+import com.ttt.chat_module.bus_event.SendImageMessageFailureEvent;
+import com.ttt.chat_module.bus_event.SendImageMessageSuccessEvent;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -129,6 +130,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
         btnSend.setOnClickListener(this);
         btnEmoji.setOnClickListener(this);
         btnRetry.setOnClickListener(this);
+        btnCamera.setOnClickListener(this);
 
         edtMessage.addTextChangeListener(this);
 
@@ -185,6 +187,8 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ChatFragmentPresenter chatFragmentPresenter = getPresenter();
+        chatFragmentPresenter.bindNotificationService();
+        chatFragmentPresenter.registerOnFriendVisitStageListener();
         chatFragmentPresenter.registerOnMessageAddedListener();
         chatFragmentPresenter.registerFriendTypingListener(chatFragmentPresenter.getOwnerInfo().getId());
         EventBus.getDefault().register(this);
@@ -193,23 +197,34 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     @Override
     public void onStart() {
         super.onStart();
-        if(!edtMessage.getText().isEmpty()) {
-            getPresenter().changeUserTypingState(true);
+        ChatFragmentPresenter presenter = getPresenter();
+        if (!edtMessage.getText().isEmpty()) {
+            presenter.changeUserTypingState(true);
+        }
+        if(!presenter.isUserInChatRoom()) {
+           presenter.enterRoom();
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        getPresenter().changeUserTypingState(false);
+        ChatFragmentPresenter presenter = getPresenter();
+        presenter.changeUserTypingState(false);
+        if(presenter.isUserInChatRoom()) {
+            presenter.leftRoom();
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         ChatFragmentPresenter chatFragmentPresenter = getPresenter();
+        chatFragmentPresenter.unbindNotificationService();
+        chatFragmentPresenter.unregisterOnFriendVisitStageListener();
         chatFragmentPresenter.unregisterOnMessageAddedListener();
         chatFragmentPresenter.unregisterFriendTypingListener();
+        chatFragmentPresenter.unRegisterFriendOnlineStateListener();
         EventBus.getDefault().unregister(this);
     }
 
@@ -221,11 +236,11 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
             }
             break;
 
-            case R.id.btn_camera:{
+            case R.id.btn_camera: {
                 Context context = getActivity();
                 FishBun.with(this)
                         .setImageAdapter(new GlideAdapter())
-                        .setMaxCount(1)
+                        .setMaxCount(6)
                         .setMinCount(1)
                         .setActionBarColor(getResources().getColor(R.color.colorPrimary),
                                 getResources().getColor(R.color.colorPrimaryDark),
@@ -265,7 +280,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CODE_PICK_IMAGE:{
+            case REQUEST_CODE_PICK_IMAGE: {
                 if (resultCode == Activity.RESULT_OK) {
                     List<Uri> imageUris = data.getParcelableArrayListExtra(Define.INTENT_PATH);
                     getPresenter().validateSentImageMessage(imageUris);
@@ -273,7 +288,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
             }
             break;
 
-            default:{
+            default: {
                 break;
             }
         }
@@ -281,42 +296,53 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onImageItemUploadSuccess(ImageItemUploadSuccessEvent event) {
-
+        if (getPresenter().getRoomID().equals(event.getRoomID())) {
+            chatMessageAdapter.showOwnerImageMessageUploaded(event.getUrl(), event.getPosition());
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onImageItemUploadFailure(ImageItemUploadFailureEvent event) {
-        chatMessageAdapter.
+        if (getPresenter().getRoomID().equals(event.getRoomID())) {
+            chatMessageAdapter.showOwnerImageMessageError();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onImageItemStartUploadingEvent(ImageItemStartUploadingEvent event) {
-
+        if (getPresenter().getRoomID().equals(event.getRoomID())) {
+            chatMessageAdapter.showUploadingNextImageMessage();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAllImageItemsUploadCompleteEvent(AllImageItemsUploadCompleteEvent event) {
-
+    public void onSendImageMessageSuccessEvent(SendImageMessageSuccessEvent event) {
+        if (getPresenter().getRoomID().equals(event.getRoomID())) {
+            getPresenter().setHasUploadingTask(false);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSendImageMessageFailureEvent(SendImageMessageFailureEvent event) {
-
+        if (getPresenter().getRoomID().equals(event.getRoomID())) {
+            getPresenter().setHasUploadingTask(false);
+            chatMessageAdapter.showOwnerImageMessageError();
+        }
     }
 
     @Override
-    public void addTopMessage(TextMessage textMessage) {
-        chatMessageAdapter.addTopMessage(textMessage);
+    public void addTopMessage(BaseMessage baseMessage) {
+        chatMessageAdapter.addTopMessage(baseMessage);
     }
 
     @Override
-    public void addMessages(List<TextMessage> textMessages) {
-        chatMessageAdapter.addMessages(textMessages);
+    public void addMessages(List<BaseMessage> baseMessages) {
+        chatMessageAdapter.addMessages(baseMessages);
     }
 
     @Override
-    public void updateMessageState(TextMessage textMessage, int position) {
-        chatMessageAdapter.updateTextMessage(textMessage, position);
+    public void updateMessageState(BaseMessage baseMessage, int position) {
+        chatMessageAdapter.updateTextMessage(baseMessage, position);
     }
 
     @Override
@@ -401,7 +427,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     @Override
     public void updateFriendOnlineState(boolean isOnline) {
         Context context = getActivity();
-        if(isOnline) {
+        if (isOnline) {
             txtFriendOnlineState.setTextColor(context.getResources().getColor(R.color.dot_online_color));
             txtFriendOnlineState.setText(R.string.active_now);
             imgFriendOnlineState.getDrawable().setLevel(1);

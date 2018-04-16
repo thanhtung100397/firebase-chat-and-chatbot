@@ -2,10 +2,11 @@ package com.ttt.chat_module.presenters.main.friends;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.ttt.chat_module.common.Constants;
-import com.ttt.chat_module.models.User;
+import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.views.main.friends.FriendsView;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by TranThanhTung on 20/02/2018.
@@ -34,10 +35,10 @@ public class FriendsPresenterImpl implements FriendsPresenter {
         friendsInteractor.getFriends(null, Constants.PAGE_SIZE,
                 new OnGetFriendsCompleteListener() {
                     @Override
-                    public void onGetFriendsSuccess(List<User> users) {
+                    public void onGetFriendsSuccess(Map<String, Integer> userPositionMap, List<UserInfo> usersInfo) {
                         friendsView.enableLoadingMore(true);
                         friendsView.hideRefreshingProgress();
-                        friendsView.refreshUsers(users);
+                        friendsView.refreshUsers(userPositionMap, usersInfo);
                     }
 
                     @Override
@@ -66,10 +67,10 @@ public class FriendsPresenterImpl implements FriendsPresenter {
         friendsInteractor.getFriends(lastFriendDocumentSnapshot, Constants.PAGE_SIZE,
                 new OnGetFriendsCompleteListener() {
                     @Override
-                    public void onGetFriendsSuccess(List<User> users) {
+                    public void onGetFriendsSuccess(Map<String, Integer> userPositionMap, List<UserInfo> usersInfo) {
                         friendsView.enableRefreshing(true);
                         friendsView.hideLoadingMoreProgress();
-                        friendsView.addMoreUsers(users);
+                        friendsView.addMoreUsers(userPositionMap, usersInfo);
                     }
 
                     @Override

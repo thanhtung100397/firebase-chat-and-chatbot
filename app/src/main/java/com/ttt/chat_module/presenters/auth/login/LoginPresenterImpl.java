@@ -24,7 +24,7 @@ public class LoginPresenterImpl implements LoginPresenter {
     public LoginPresenterImpl(Context context, LoginView loginView) {
         this.context = context;
         this.loginView = loginView;
-        loginInteractor = new LoginInteractorImpl();
+        loginInteractor = new LoginInteractorImpl(context);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.ttt.chat_module.presenters.chat.activity;
 
-import com.ttt.chat_module.models.User;
+import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.presenters.BaseInteractor;
 
 import java.util.List;
@@ -10,6 +10,7 @@ import java.util.List;
  */
 
 public interface ChatActivityInteractor extends BaseInteractor {
-    void findChatRoom(List<User> users, OnGetChatRoomIDCompleteListener listener);
-    void createChatRoom(List<User> users, OnGetChatRoomIDCompleteListener listener);
+    void getChatRoomInfo(String chatRoomID, OnGetChatRoomInfoCompleteListener listener);
+    void findChatRoom(List<UserInfo> usersInfo, OnGetChatRoomInfoCompleteListener listener);
+    void createChatRoom(List<UserInfo> usersInfo, OnGetChatRoomInfoCompleteListener listener);
 }

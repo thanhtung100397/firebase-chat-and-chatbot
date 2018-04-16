@@ -1,5 +1,6 @@
 package com.ttt.chat_module.presenters.chat.fragment;
 
+import com.ttt.chat_module.models.message_models.BaseMessage;
 import com.ttt.chat_module.models.message_models.TextMessage;
 import com.ttt.chat_module.presenters.chat.BasePaginationListener;
 
@@ -8,6 +9,6 @@ import com.ttt.chat_module.presenters.chat.BasePaginationListener;
  */
 
 public interface OnMessageChangedListener extends BasePaginationListener<TextMessage> {
-    void onMessageAdded(TextMessage textMessage);
-    void onMessageModified(TextMessage textMessage, int position);
+    void onMessageAdded(BaseMessage baseMessage);
+    void onMessageModified(BaseMessage baseMessage, int position);
 }

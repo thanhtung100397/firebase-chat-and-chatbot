@@ -9,7 +9,11 @@ import android.widget.TextView;
 import com.ttt.chat_module.GlideApp;
 import com.ttt.chat_module.R;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
-import com.ttt.chat_module.models.User;
+import com.ttt.chat_module.models.UserInfo;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,9 +24,34 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 
 public class ListFriendsAdapter extends EndlessLoadingRecyclerViewAdapter {
+    private Map<String, Integer> userPositionMap;
 
     public ListFriendsAdapter(Context context) {
         super(context, false);
+        this.userPositionMap = new HashMap<>();
+    }
+
+    public void addFriends(Map<String, Integer> userPositionMap, List<UserInfo> usersInfo) {
+        this.userPositionMap.putAll(userPositionMap);
+        addModels(usersInfo, false);
+    }
+
+    public void refreshFriends(Map<String, Integer> userPositionMap, List<UserInfo> usersInfo) {
+        this.userPositionMap = userPositionMap;
+        refresh(usersInfo);
+    }
+
+    public void updateOnlineState(String userID, boolean isOnline) {
+        Integer position = userPositionMap.get(userID);
+        if(position == null) {
+            return;
+        }
+        UserInfo userInfo = getItem(position, UserInfo.class);
+        if(userInfo.getIsOnline() == isOnline) {
+            return;
+        }
+        userInfo.setIsOnline(isOnline);
+        notifyItemChanged(position);
     }
 
     @Override
@@ -44,16 +73,16 @@ public class ListFriendsAdapter extends EndlessLoadingRecyclerViewAdapter {
 
     @Override
     protected void bindNormalViewHolder(NormalViewHolder holder, int position) {
-        User user = getItem(position, User.class);
+        UserInfo userInfo = getItem(position, UserInfo.class);
         ItemFriendViewHolder itemFriendViewHolder = (ItemFriendViewHolder) holder;
 
         GlideApp.with(getContext())
-                .load(user.getAvatarUrl())
+                .load(userInfo.getAvatarUrl())
                 .placeholder(R.drawable.avatar_placeholder)
                 .into(itemFriendViewHolder.imgAvatar);
-        itemFriendViewHolder.txtName.setText(user.getLastName() + " " + user.getFirstName());
-        itemFriendViewHolder.txtEmail.setText(user.getEmail());
-        itemFriendViewHolder.imgOnline.setVisibility(user.getIsOnline() ? View.VISIBLE : View.GONE);
+        itemFriendViewHolder.txtName.setText(userInfo.getLastName() + " " + userInfo.getFirstName());
+        itemFriendViewHolder.txtEmail.setText(userInfo.getEmail());
+        itemFriendViewHolder.imgOnline.setVisibility(userInfo.getIsOnline() ? View.VISIBLE : View.GONE);
     }
 
     class ItemFriendViewHolder extends NormalViewHolder {

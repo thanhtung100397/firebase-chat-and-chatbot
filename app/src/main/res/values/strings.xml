@@ -26,7 +26,7 @@
     <string name="enter_confirm_password">Enter confirm password</string>
     <string name="email_exist">Email exist</string>
     <string name="password_should_be_at_leas_6_characters">Password should be at least 6 characters</string>
-    <string name="type_your_message">Type your message...</string>
+    <string name="type_your_message">Type your message…</string>
     <string name="seen">seen</string>
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
@@ -36,9 +36,19 @@
     <string name="logout">Logout</string>
     <string name="logout_failure">logout failed, please try again</string>
     <string name="sent_message_failed">Send message failed</string>
-    <string name="fetching">fetching...</string>
+    <string name="fetching">fetching…</string>
     <string name="active_now">Active now</string>
     <string name="offline">Offline</string>
     <string name="pick_image">Pick image</string>
     <string name="must_pick_one_image">Please pick atleast 1 image</string>
+    <string name="uploading_task_inprogress">Uploading task inprogress</string>
+    <string name="view_image_detail">View image</string>
+    <string name="download">Download</string>
+    <string name="you">You</string>
+    <string name="you_have_sent">You have sent</string>
+    <string name="has_sent">has sent</string>
+    <string name="Has_sent">Has sent</string>
+    <string name="an_image">an image</string>
+    <string name="images">images</string>
+    <string name="chat_room_not_found">Chat room not found</string>
 </resources>

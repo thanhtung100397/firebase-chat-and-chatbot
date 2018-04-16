@@ -1,6 +1,7 @@
 package com.ttt.chat_module.common.adapter.recycler_view_adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.transition.TransitionManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,8 @@ import android.widget.TextView;
 
 import com.ttt.chat_module.GlideApp;
 import com.ttt.chat_module.R;
+import com.ttt.chat_module.common.Constants;
+import com.ttt.chat_module.common.custom_view.SpaceItemDecoration;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.ttt.chat_module.models.ImageItem;
 import com.ttt.chat_module.models.message_models.BaseMessage;
@@ -19,6 +22,7 @@ import com.ttt.chat_module.models.message_models.TextMessage;
 import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.models.wrapper_model.FriendMessageWrapper;
 import com.ttt.chat_module.models.wrapper_model.OwnerMessageWrapper;
+import com.ttt.chat_module.views.image_details.ImageDetailActivity;
 
 import java.util.Date;
 import java.util.List;
@@ -33,7 +37,7 @@ import butterknife.ButterKnife;
 
 public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
     public static final int VIEW_TYPE_FRIEND_TYPING = -2;
-    public static final int VIEW_TYPE_FRIEND_MESSAGE = 2;
+    public static final int VIEW_TYPE_FRIEND_TEXT_MESSAGE = 2;
     public static final int VIEW_TYPE_OWNER_IMAGE_MESSAGE = 3;
 
     private UserInfo ownerInfo;
@@ -80,9 +84,9 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
             }
             break;
 
-            case VIEW_TYPE_FRIEND_MESSAGE: {
-                View itemView = getInflater().inflate(R.layout.item_friend_typing, parent, false);
-                result = new FriendTypingViewHolder(itemView);
+            case VIEW_TYPE_FRIEND_TEXT_MESSAGE: {
+                View itemView = getInflater().inflate(R.layout.item_friend_message, parent, false);
+                result = new FriendTextMessageViewHolder(itemView);
             }
             break;
 
@@ -137,7 +141,7 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
             }
             break;
 
-            case VIEW_TYPE_FRIEND_MESSAGE: {
+            case VIEW_TYPE_FRIEND_TEXT_MESSAGE: {
                 bindFriendMessageViewHolder((FriendTextMessageViewHolder) viewHolder, position);
             }
             break;
@@ -240,50 +244,129 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
         }
     }
 
-    private boolean isOwnerMessage(TextMessage textMessage) {
-        return textMessage.getOwnerID().equals(ownerInfo.getId());
+    private boolean isOwnerMessage(BaseMessage baseMessage) {
+        return baseMessage.getOwnerID().equals(ownerInfo.getId());
     }
 
-    public void addTopMessage(TextMessage textMessage) {
-        if (isOwnerMessage(textMessage)) {
-            addModel(isFriendTypingMessageShowing ? 1 : 0, new OwnerMessageWrapper(textMessage), VIEW_TYPE_NORMAL, true);
+    public void addTopMessage(BaseMessage baseMessage) {
+        if (isOwnerMessage(baseMessage)) {
+            switch (baseMessage.getType()) {
+                case BaseMessage.TEXT_MESSAGE: {
+                    addModel(isFriendTypingMessageShowing ? 1 : 0, new OwnerMessageWrapper(baseMessage), VIEW_TYPE_NORMAL, true);
+                }
+                break;
+
+                case BaseMessage.IMAGE_MESSAGE: {
+                    addModel(isFriendTypingMessageShowing ? 1 : 0, new OwnerMessageWrapper(baseMessage), VIEW_TYPE_OWNER_IMAGE_MESSAGE, true);
+                }
+                break;
+
+                default: {
+                    break;
+                }
+            }
         } else {
-            addModel(isFriendTypingMessageShowing ? 1 : 0, new FriendMessageWrapper(textMessage), VIEW_TYPE_FRIEND_MESSAGE, true);
-        }
-    }
+            switch (baseMessage.getType()) {
+                case BaseMessage.TEXT_MESSAGE: {
+                    addModel(isFriendTypingMessageShowing ? 1 : 0, new FriendMessageWrapper(baseMessage), VIEW_TYPE_FRIEND_TEXT_MESSAGE, true);
+                }
+                break;
 
-    public void addMessages(List<TextMessage> textMessages) {
-        for (TextMessage textMessage : textMessages) {
-            if (isOwnerMessage(textMessage)) {
-                addModel(new OwnerMessageWrapper(textMessage), VIEW_TYPE_NORMAL, false);
-            } else {
-                addModel(new FriendMessageWrapper(textMessage), VIEW_TYPE_FRIEND_MESSAGE, false);
+                case BaseMessage.IMAGE_MESSAGE: {
+                    //TODO
+                }
+                break;
+
+                default: {
+                    break;
+                }
             }
         }
     }
 
-    public void updateTextMessage(TextMessage textMessage, int position) {
-        BaseMessage baseMessage;
-        if (isOwnerMessage(textMessage)) {
-            OwnerMessageWrapper messageWrapper = getItem(isFriendTypingMessageShowing ? position + 1 : position, OwnerMessageWrapper.class);
-            baseMessage = messageWrapper.getMessage();
-        } else {
-            FriendMessageWrapper messageWrapper = getItem(isFriendTypingMessageShowing ? position + 1 : position, FriendMessageWrapper.class);
-            baseMessage = messageWrapper.getMessage();
-        }
-        if (baseMessage instanceof TextMessage) {
-            ((TextMessage) baseMessage).update(textMessage);
-            notifyItemChanged(position);
+    public void addMessages(List<BaseMessage> baseMessages) {
+        for (BaseMessage baseMessage : baseMessages) {
+            if (isOwnerMessage(baseMessage)) {
+                switch (baseMessage.getType()) {
+                    case BaseMessage.TEXT_MESSAGE: {
+                        addModel(new OwnerMessageWrapper(baseMessage), VIEW_TYPE_NORMAL, false);
+                    }
+                    break;
+
+                    case BaseMessage.IMAGE_MESSAGE: {
+                        addModel(new OwnerMessageWrapper(baseMessage), VIEW_TYPE_OWNER_IMAGE_MESSAGE, false);
+                    }
+                    break;
+
+                    default: {
+                        break;
+                    }
+
+                }
+            } else {
+                switch (baseMessage.getType()) {
+                    case BaseMessage.TEXT_MESSAGE: {
+                        addModel(new FriendMessageWrapper(baseMessage), VIEW_TYPE_FRIEND_TEXT_MESSAGE, false);
+                    }
+                    break;
+
+                    case BaseMessage.IMAGE_MESSAGE: {
+                        //TODO
+                    }
+                    break;
+
+                    default: {
+                        break;
+                    }
+
+                }
+            }
         }
     }
 
-    public void updateOwnerTopImageMessage(String url, int imagePosition) {
-        OwnerMessageWrapper messageWrapper = getItem(isFriendTypingMessageShowing ? 1 : 0, OwnerMessageWrapper.class);
-        BaseMessage baseMessage = messageWrapper.getMessage();
-        if (baseMessage instanceof ImageMessage) {
-            ImageItem imageItem = ((ImageMessage) baseMessage).getImages().get(imagePosition + "");
-            if (imageItem != null) {
-                imageItem.setUrl(url);
+    public void updateTextMessage(BaseMessage baseMessage, int position) {
+        if (isOwnerMessage(baseMessage)) {
+            OwnerMessageWrapper messageWrapper = getItem(isFriendTypingMessageShowing ? position + 1 : position, OwnerMessageWrapper.class);
+            messageWrapper.getMessage().update(baseMessage);
+        } else {
+            FriendMessageWrapper messageWrapper = getItem(isFriendTypingMessageShowing ? position + 1 : position, FriendMessageWrapper.class);
+            messageWrapper.getMessage().update(baseMessage);
+        }
+        notifyItemChanged(position);
+    }
+
+    public void showOwnerImageMessageUploaded(String url, int imagePosition) {
+        int position = isFriendTypingMessageShowing ? 1 : 0;
+        RecyclerView recyclerView = getRecyclerView();
+        View view = recyclerView.getChildAt(position);
+        if (view != null) {
+            RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
+            if (viewHolder instanceof OwnerImageMessageViewHolder) {
+                ((OwnerImageMessageViewHolder) viewHolder).imageItemAdapter.updateImageItem(imagePosition, url);
+            }
+        }
+    }
+
+    public void showOwnerImageMessageError() {
+        int position = isFriendTypingMessageShowing ? 1 : 0;
+        RecyclerView recyclerView = getRecyclerView();
+        View view = recyclerView.getChildAt(position);
+        if (view != null) {
+            RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
+            if (viewHolder instanceof OwnerImageMessageViewHolder) {
+                ((OwnerImageMessageViewHolder) viewHolder).imageItemAdapter.showError();
+            }
+        }
+    }
+
+    public void showUploadingNextImageMessage() {
+        int position = isFriendTypingMessageShowing ? 1 : 0;
+        RecyclerView recyclerView = getRecyclerView();
+        View view = recyclerView.getChildAt(position);
+        if (view != null) {
+            RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
+            if (viewHolder instanceof OwnerImageMessageViewHolder) {
+                ((OwnerImageMessageViewHolder) viewHolder).imageItemAdapter.uploadNextImage();
             }
         }
     }
@@ -370,19 +453,37 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
         @BindView(R.id.txt_time)
         TextView txtTime;
 
-        UploadImageItemAdapter imageItemAdapter;
+        SingleUploadImageItemAdapter imageItemAdapter;
 
-        public OwnerImageMessageViewHolder(View itemView, RecyclerView.RecycledViewPool viewPool) {
+        OwnerImageMessageViewHolder(View itemView, RecyclerView.RecycledViewPool viewPool) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             Context context = getContext();
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 3) {
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 3,
+                    GridLayoutManager.VERTICAL, true) {
                 @Override
                 public boolean canScrollVertically() {
                     return false;
                 }
+
+                @Override
+                protected boolean isLayoutRTL() {
+                    return true;
+                }
             };
-            imageItemAdapter = new UploadImageItemAdapter(context);
+            imageItemAdapter = new SingleUploadImageItemAdapter(context);
+            imageItemAdapter.setOnItemClickListener((adapter, position) -> {
+                ImageItem imageItem = adapter.getItem(position);
+                Intent intent = new Intent(context, ImageDetailActivity.class);
+                if (imageItem.getUrl() == null) {
+                    intent.putExtra(Constants.KEY_IMAGE_URI, imageItem.getUri().toString());
+                } else {
+                    intent.putExtra(Constants.KEY_IMAGE_URL, imageItem.getUrl());
+                }
+                context.startActivity(intent);
+            });
+            int spacingInPixels = context.getResources().getDimensionPixelSize(R.dimen.small_padding);
+            rcImages.addItemDecoration(new SpaceItemDecoration(spacingInPixels));
             rcImages.setRecycledViewPool(viewPool);
             rcImages.setLayoutManager(gridLayoutManager);
             rcImages.setAdapter(imageItemAdapter);

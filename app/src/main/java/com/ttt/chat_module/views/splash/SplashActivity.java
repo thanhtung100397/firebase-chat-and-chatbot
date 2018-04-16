@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
+import com.ttt.chat_module.GlideApp;
 import com.ttt.chat_module.R;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.utils.UserAuth;

@@ -1,15 +1,15 @@
-package bus_event;
+package com.ttt.chat_module.bus_event;
 
-public class ImageItemUploadFailureEvent {
+public class ImageItemStartUploadingEvent {
     private String roomID;
     private int position;
 
-    public ImageItemUploadFailureEvent(String roomID, int position) {
+    public ImageItemStartUploadingEvent(String roomID, int position) {
         this.roomID = roomID;
         this.position = position;
     }
 
-    public ImageItemUploadFailureEvent() {
+    public ImageItemStartUploadingEvent() {
     }
 
     public String getRoomID() {

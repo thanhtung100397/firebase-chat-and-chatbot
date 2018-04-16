@@ -18,16 +18,26 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class UploadImageItemAdapter extends RecyclerView.Adapter<UploadImageItemAdapter.ImageItemViewHolder> {
+public class SingleUploadImageItemAdapter extends RecyclerView.Adapter<SingleUploadImageItemAdapter.ImageItemViewHolder> {
     private Context context;
     private LayoutInflater inflater;
     private Map<String, ImageItem> mapImageItems;
-    private int errorImageItemPosition = -1;
+    private int currentImageItemPosition = -1;
+    private boolean isError = false;
+    private OnItemClickListener onItemClickListener;
 
-    public UploadImageItemAdapter(Context context) {
+    public SingleUploadImageItemAdapter(Context context) {
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.mapImageItems = new HashMap<>(1);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public ImageItem getItem(int position) {
+        return mapImageItems.get(position+"");
     }
 
     public void refreshImageItems(Map<String, ImageItem> mapImageItems) {
@@ -46,34 +56,44 @@ public class UploadImageItemAdapter extends RecyclerView.Adapter<UploadImageItem
         }
     }
 
-    public void showErrorImageItem(int position) {
-        this.errorImageItemPosition = position;
-        notifyItemRangeChanged(position, getItemCount() - position);
+    public void showError() {
+        this.isError = true;
+        notifyItemChanged(currentImageItemPosition);
+    }
+
+    public void uploadNextImage() {
+        int currentPosition = currentImageItemPosition;
+        currentImageItemPosition++;
+        notifyItemRangeChanged(currentPosition, 2);
     }
 
     @Override
     public ImageItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = inflater.inflate(R.layout.item_image_uploading, parent, false);
+        ImageItemViewHolder imageItemViewHolder = new ImageItemViewHolder(itemView);
         return new ImageItemViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ImageItemViewHolder holder, int position) {
         ImageItem imageItem = mapImageItems.get(position+"");
-        if(imageItem.getUrl() == null) {
+        if(imageItem.getUrl() == null) {//image not uploaded
             GlideApp.with(context)
                     .load(imageItem.getUri())
                     .placeholder(R.drawable.image_placeholder)
                     .into(holder.imageView);
-            if(errorImageItemPosition == -1) {
-                holder.progressBar.setVisibility(View.VISIBLE);
-                holder.imgError.setVisibility(View.GONE);
-                holder.imageView.clearColorFilter();
-            } else {
-                holder.progressBar.setVisibility(View.GONE);
-                holder.imgError.setVisibility(View.VISIBLE);
+
+            if(currentImageItemPosition == position) {
+                if(isError) {
+                    holder.progressBar.setVisibility(View.GONE);
+                    holder.imgError.setVisibility(View.VISIBLE);
+                } else {
+                    holder.progressBar.setVisibility(View.VISIBLE);
+                    holder.imgError.setVisibility(View.GONE);
+                }
             }
-        } else {
+            holder.imageView.setColorFilter(context.getResources().getColor(R.color.transparency_black));
+        } else {//image uploaded
             if(imageItem.getUri() != null) {
                 GlideApp.with(context)
                         .load(imageItem.getUri())
@@ -86,7 +106,8 @@ public class UploadImageItemAdapter extends RecyclerView.Adapter<UploadImageItem
                         .into(holder.imageView);
             }
             holder.progressBar.setVisibility(View.GONE);
-            holder.imageView.setColorFilter(context.getResources().getColor(R.color.transparency_black));
+            holder.imgError.setVisibility(View.GONE);
+            holder.imageView.clearColorFilter();
         }
     }
 
@@ -106,6 +127,15 @@ public class UploadImageItemAdapter extends RecyclerView.Adapter<UploadImageItem
         ImageItemViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(view -> {
+                if(onItemClickListener != null) {
+                    onItemClickListener.onItemClick(SingleUploadImageItemAdapter.this, getAdapterPosition());
+                }
+            });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(SingleUploadImageItemAdapter adapter, int position);
     }
 }

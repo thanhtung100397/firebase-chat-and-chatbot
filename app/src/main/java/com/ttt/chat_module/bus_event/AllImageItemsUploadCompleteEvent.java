@@ -1,4 +1,4 @@
-package bus_event;
+package com.ttt.chat_module.bus_event;
 
 import java.util.Map;
 

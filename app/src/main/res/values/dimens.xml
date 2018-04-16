@@ -4,12 +4,15 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_padding">24dp</dimen>
     <dimen name="item_padding">16dp</dimen>
+    <dimen name="small_padding">5dp</dimen>
+    <dimen name="tiny_padding">2dp</dimen>
 
     <dimen name="edit_text_padding">10dp</dimen>
     <dimen name="font_size_20dp">20dp</dimen>
     <dimen name="font_size_22dp">22dp</dimen>
     <dimen name="edit_text_margin_bottom">16dp</dimen>
     <dimen name="font_size_40dp">40dp</dimen>
+    <dimen name="large_avatar_size">128dp</dimen>
     <dimen name="small_avatar_size">56dp</dimen>
     <dimen name="tiny_avatar_size">32dp</dimen>
     <dimen name="dot_size">17dp</dimen>
@@ -19,9 +22,8 @@
     <dimen name="font_size_16dp">16dp</dimen>
     <dimen name="font_size_13dp">13dp</dimen>
     <dimen name="font_size_18dp">18dp</dimen>
-    <dimen name="small_padding">5dp</dimen>
+    <dimen name="font_size_30dp">30dp</dimen>
     <dimen name="font_size_10dp">10dp</dimen>
     <dimen name="font_size_15dp">15dp</dimen>
     <dimen name="font_size_50dp">50dp</dimen>
-    <dimen name="tiny_padding">2dp</dimen>
 </resources>

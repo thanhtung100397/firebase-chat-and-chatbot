@@ -11,7 +11,10 @@ import java.util.Map;
 
 public class ChatRoomInfo implements Serializable {
     public static final String USERS_INFO = "usersInfo";
+    public static final String VISIT_STATES = "visitStates";
     public static final String TYPING_STATES = "typingStates";
+    public static final String LAST_MESSAGE = "lastMessage";
+    public static final String MESSAGES = "messages";
 
     private String id;
     private Map<String, UserInfo> usersInfo;
@@ -19,11 +22,11 @@ public class ChatRoomInfo implements Serializable {
     public ChatRoomInfo() {
     }
 
-    public ChatRoomInfo(String id, List<User> users) {
+    public ChatRoomInfo(String id, List<UserInfo> usersInfo) {
         this.id = id;
-        this.usersInfo = new HashMap<>(users.size());
-        for (User user : users) {
-            usersInfo.put(user.getId(), new UserInfo(user));
+        this.usersInfo = new HashMap<>(usersInfo.size());
+        for (UserInfo userInfo : usersInfo) {
+            this.usersInfo.put(userInfo.getId(), userInfo);
         }
     }
 

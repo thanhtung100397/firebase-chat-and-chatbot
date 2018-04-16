@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/selectableItemBackground"
+    android:padding="@dimen/item_padding"
+    android:clickable="true"
+    android:focusable="true">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_avatar"
+        android:layout_width="@dimen/small_avatar_size"
+        android:layout_height="@dimen/small_avatar_size"
+        android:src="@drawable/avatar_placeholder"
+        android:layout_marginRight="@dimen/item_padding"
+        android:layout_marginEnd="@dimen/item_padding" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_online"
+        android:layout_width="@dimen/dot_size"
+        android:layout_height="@dimen/dot_size"
+        app:civ_border_color="@android:color/white"
+        app:civ_border_width="3dp"
+        android:src="@color/dot_online_color"
+        android:layout_alignBottom="@id/img_avatar"
+        android:layout_alignRight="@id/img_avatar"
+        android:layout_alignEnd="@id/img_avatar" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toRightOf="@id/img_avatar"
+        android:layout_toEndOf="@id/img_avatar"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_size_18dp"
+            android:textColor="@android:color/black"
+            android:text="Tran Thanh Tung" />
+
+        <TextView
+            android:id="@+id/txt_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_name"
+            android:text="last message"
+            android:textSize="@dimen/font_size_14dp"
+            android:layout_marginTop="3dp"/>
+    </LinearLayout>
+</RelativeLayout>

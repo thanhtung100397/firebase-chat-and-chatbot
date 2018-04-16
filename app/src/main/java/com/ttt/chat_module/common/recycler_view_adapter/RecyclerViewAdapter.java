@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 public abstract class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    public static String TAG = "RecyclerViewAdapter";
     public static final int VIEW_TYPE_NORMAL = 0;
 
     public static AtomicInteger idGenerator = new AtomicInteger();

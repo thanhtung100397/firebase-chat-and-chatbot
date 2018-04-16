@@ -1,8 +1,10 @@
 package com.ttt.chat_module.views.main.friends;
 
 import com.ttt.chat_module.models.User;
+import com.ttt.chat_module.models.UserInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by TranThanhTung on 19/02/2018.
@@ -18,6 +20,6 @@ public interface FriendsView {
     void enableLoadingMore(boolean enable);
     void enableRefreshing(boolean enable);
 
-    void refreshUsers(List<User> users);
-    void addMoreUsers(List<User> users);
+    void refreshUsers(Map<String, Integer> userPositionMap, List<UserInfo> usersInfo);
+    void addMoreUsers(Map<String,Integer> userPositionMap, List<UserInfo> usersInfo);
 }

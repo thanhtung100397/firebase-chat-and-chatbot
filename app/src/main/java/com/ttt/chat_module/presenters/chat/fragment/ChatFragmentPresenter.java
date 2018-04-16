@@ -14,6 +14,12 @@ import java.util.Map;
 
 public interface ChatFragmentPresenter extends BasePresenter {
     boolean isCoupleChatRoom();
+    boolean isUserInChatRoom();
+    String getRoomID();
+    void bindNotificationService();
+    void unbindNotificationService();
+    void registerOnFriendVisitStageListener();
+    void unregisterOnFriendVisitStageListener();
     void registerOnMessageAddedListener();
     void unregisterOnMessageAddedListener();
     void registerFriendTypingListener(String ignoreUserID);
@@ -27,4 +33,7 @@ public interface ChatFragmentPresenter extends BasePresenter {
     void changeUserTypingState(boolean state);
     void registerFriendOnlineStateListener(String userID);
     void unRegisterFriendOnlineStateListener();
+    void setHasUploadingTask(boolean hasUploadingTask);
+    void leftRoom();
+    void enterRoom();
 }

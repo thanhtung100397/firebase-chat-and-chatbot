@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ImageMessage extends BaseMessage {
+    public static final String IMAGES = "images";
+
     private Map<String, ImageItem> images;
 
     public ImageMessage(String owner, List<Uri> uris) {

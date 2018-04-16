@@ -18,4 +18,9 @@
         <item name="minHeight">27dip</item>
         <item name="maxHeight">27dip</item>
     </style>
+
+    <style name="TransparentActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="windowActionBarOverlay">true</item>
+    </style>
 </resources>

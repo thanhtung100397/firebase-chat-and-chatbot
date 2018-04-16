@@ -1,15 +1,17 @@
-package bus_event;
+package com.ttt.chat_module.bus_event;
 
-public class ImageItemStartUploadingEvent {
+public class ImageItemUploadSuccessEvent {
     private String roomID;
     private int position;
+    private String url;
 
-    public ImageItemStartUploadingEvent(String roomID, int position) {
+    public ImageItemUploadSuccessEvent(String roomID, int position, String url) {
         this.roomID = roomID;
         this.position = position;
+        this.url = url;
     }
 
-    public ImageItemStartUploadingEvent() {
+    public ImageItemUploadSuccessEvent() {
     }
 
     public String getRoomID() {
@@ -26,5 +28,13 @@ public class ImageItemStartUploadingEvent {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

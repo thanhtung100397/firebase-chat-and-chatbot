@@ -41,7 +41,7 @@
         android:layout_alignTop="@id/img_avatar"
         android:text="Lorem inspu a ns di u fhush fue hg uf rhgurhgurhgrg"
         android:textColor="@android:color/white"
-        android:background="@drawable/item_message_sent_background"
+        android:background="@drawable/item_friend_message_background"
         android:textSize="@dimen/font_size_15dp" />
 
     <TextView

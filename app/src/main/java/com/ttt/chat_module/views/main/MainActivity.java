@@ -13,21 +13,25 @@ import android.view.Gravity;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.ttt.chat_module.AppStatusApplication;
 import com.ttt.chat_module.R;
 import com.ttt.chat_module.common.adapter.view_pager_adapter.HomeFragmentPagerAdapter;
 import com.ttt.chat_module.common.custom_view.LoadingDialog;
 import com.ttt.chat_module.common.utils.ToastUtils;
 import com.ttt.chat_module.common.utils.UserAuth;
+import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.presenters.BasePresenter;
 import com.ttt.chat_module.presenters.OnRequestCompleteListener;
+import com.ttt.chat_module.presenters.main.MainActivityPresenter;
+import com.ttt.chat_module.presenters.main.MainActivityPresenterImpl;
 import com.ttt.chat_module.views.auth.login.LoginActivity;
 import com.ttt.chat_module.views.base.activity.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity<MainActivityPresenter> implements BottomNavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.bottom_navigation)
@@ -61,6 +65,18 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener);
 
         loadingDialog = new LoadingDialog(this);
+
+        MainActivityPresenter presenter = getPresenter();
+        presenter.registerUsersOnlineStateChangeListener();
+        presenter.registerChatRoomLastMessageChangeListener();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MainActivityPresenter presenter = getPresenter();
+        presenter.unregisterUsersOnlineStateChangeListener();
+        presenter.unregisterChatRoomLastMessageChangeListener();
     }
 
     @Override
@@ -118,6 +134,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 .changeOnlineState(false, new OnRequestCompleteListener() {
                     @Override
                     public void onRequestSuccess() {
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic(UserAuth.getUserID());
                         FirebaseAuth.getInstance().signOut();
                         UserAuth.saveUser(MainActivity.this, null);
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
@@ -159,8 +176,8 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     }
 
     @Override
-    protected BasePresenter initPresenter() {
-        return null;
+    protected MainActivityPresenter initPresenter() {
+        return new MainActivityPresenterImpl();
     }
 
     @Override

@@ -5,6 +5,8 @@ package com.ttt.chat_module.models.message_models;
  */
 
 public class TextMessage extends BaseMessage {
+    public static final String MESSAGE = "message";
+
     private String message;
 
     public TextMessage(String ownerID, String message) {
@@ -13,13 +15,6 @@ public class TextMessage extends BaseMessage {
     }
 
     public TextMessage() {
-    }
-
-    public void update(TextMessage textMessage) {
-        setOwnerID(textMessage.getOwnerID());
-        setMessage(textMessage.getMessage());
-        setCreatedDate(textMessage.getCreatedDate());
-        setSeenBy(textMessage.getSeenBy());
     }
 
     public String getMessage() {

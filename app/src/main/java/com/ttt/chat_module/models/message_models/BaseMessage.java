@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Map;
 
 public abstract class BaseMessage {
+    public static final String TYPE = "type";
+    public static final String OWNER_ID = "ownerID";
     public static final String CREATED_DATE = "createdDate";
 
     public static final String TEXT_MESSAGE = "text";
@@ -23,6 +25,20 @@ public abstract class BaseMessage {
     }
 
     public BaseMessage() {
+    }
+
+    public void update(BaseMessage baseMessage) {
+        setOwnerID(baseMessage.getOwnerID());
+        setCreatedDate(baseMessage.getCreatedDate());
+        setSeenBy(baseMessage.getSeenBy());
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getOwnerID() {

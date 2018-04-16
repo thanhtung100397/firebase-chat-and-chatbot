@@ -21,14 +21,9 @@
         android:id="@+id/rc_images"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/small_padding"
-        android:paddingLeft="@dimen/edit_text_padding"
-        android:paddingRight="@dimen/edit_text_padding"
-        android:paddingTop="@dimen/small_padding"
-        android:background="@drawable/item_message_background"
         android:layout_below="@id/txt_time"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/txt_seen"
