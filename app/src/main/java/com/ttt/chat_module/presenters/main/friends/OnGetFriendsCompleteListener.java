@@ -2,7 +2,7 @@ package com.ttt.chat_module.presenters.main.friends;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.ttt.chat_module.models.UserInfo;
-import com.ttt.chat_module.presenters.chat.BasePaginationListener;
+import com.ttt.chat_module.presenters.BasePaginationListener;
 
 import java.util.List;
 import java.util.Map;

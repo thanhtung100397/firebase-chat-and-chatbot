@@ -10,13 +10,11 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.models.ChatRoomInfo;
-import com.ttt.chat_module.models.notification.NewMessageNotification;
-import com.ttt.chat_module.models.notification.TopicNotification;
+import com.ttt.chat_module.models.google_map.Location;
+import com.ttt.chat_module.models.message_models.EmojiMessage;
+import com.ttt.chat_module.models.message_models.LocationMessage;
 import com.ttt.chat_module.models.wrapper_model.LastMessageWrapper;
 import com.ttt.chat_module.models.VisitState;
 import com.ttt.chat_module.models.message_models.BaseMessage;
@@ -26,15 +24,9 @@ import com.ttt.chat_module.common.utils.UserAuth;
 import com.ttt.chat_module.models.TypingState;
 import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.presenters.OnRequestCompleteListener;
-import com.ttt.chat_module.services.google_api.GoogleApiClient;
-import com.ttt.chat_module.services.google_api.firebase_topic_notification.FirebaseTopicNotificationService;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by TranThanhTung on 20/02/2018.
@@ -69,6 +61,38 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
         writeBatch.set(chatRoomRef, new LastMessageWrapper(textMessage), SetOptions.merge());
         writeBatch.commit()
                 .addOnSuccessListener(documentReference -> listener.onSendMessageSuccess(textMessage))
+                .addOnFailureListener(error -> listener.onRequestError(error.getMessage()));
+    }
+
+    @Override
+    public void sendEmojiImageMessage(String roomID, String type, String emojiID, OnSendMessageCompleteListener listener) {
+        DocumentReference chatRoomRef = FirebaseFirestore.getInstance()
+                .collection(Constants.CHAT_ROOMS_COLLECTION)
+                .document(roomID);
+
+        EmojiMessage emojiMessage = new EmojiMessage(UserAuth.getUserID(), type, emojiID);
+
+        WriteBatch writeBatch = FirebaseFirestore.getInstance().batch();
+        writeBatch.set(chatRoomRef.collection(ChatRoomInfo.MESSAGES).document(), emojiMessage);
+        writeBatch.set(chatRoomRef, new LastMessageWrapper(emojiMessage), SetOptions.merge());
+        writeBatch.commit()
+                .addOnSuccessListener(documentReference -> listener.onSendMessageSuccess(emojiMessage))
+                .addOnFailureListener(error -> listener.onRequestError(error.getMessage()));
+    }
+
+    @Override
+    public void sendLocationMessage(String roomID, Location location, String address, OnSendMessageCompleteListener listener) {
+        DocumentReference chatRoomRef = FirebaseFirestore.getInstance()
+                .collection(Constants.CHAT_ROOMS_COLLECTION)
+                .document(roomID);
+
+        LocationMessage locationMessage = new LocationMessage(UserAuth.getUserID(), location.getLat(), location.getLng(), address);
+
+        WriteBatch writeBatch = FirebaseFirestore.getInstance().batch();
+        writeBatch.set(chatRoomRef.collection(ChatRoomInfo.MESSAGES).document(), locationMessage);
+        writeBatch.set(chatRoomRef, new LastMessageWrapper(locationMessage), SetOptions.merge());
+        writeBatch.commit()
+                .addOnSuccessListener(documentReference -> listener.onSendMessageSuccess(locationMessage))
                 .addOnFailureListener(error -> listener.onRequestError(error.getMessage()));
     }
 
@@ -153,6 +177,16 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
             }
             break;
 
+            case BaseMessage.EMOJI_MESSAGE: {
+                resolveEmojiMessage(documentChange, listener);
+            }
+            break;
+
+            case BaseMessage.LOCATION_MESSAGE: {
+                resolveLocationMessage(documentChange, listener);
+            }
+            break;
+
             default: {
                 break;
             }
@@ -191,6 +225,45 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
             case MODIFIED: {
                 listener.onMessageModified(documentChange.getDocument().toObject(ImageMessage.class),
                         documentChange.getOldIndex());
+            }
+            break;
+
+            default: {
+                break;
+            }
+        }
+    }
+
+    private void resolveEmojiMessage(DocumentChange documentChange, OnMessageChangedListener listener) {
+        switch (documentChange.getType()) {
+            case ADDED: {
+                DocumentSnapshot documentSnapshot = documentChange.getDocument();
+                listener.onMessageAdded(documentSnapshot.toObject(EmojiMessage.class));
+            }
+            break;
+
+            case MODIFIED: {
+                listener.onMessageModified(documentChange.getDocument().toObject(EmojiMessage.class),
+                        documentChange.getOldIndex());
+            }
+            break;
+
+            default: {
+                break;
+            }
+        }
+    }
+
+    private void resolveLocationMessage(DocumentChange documentChange, OnMessageChangedListener listener) {
+        switch (documentChange.getType()) {
+            case ADDED: {
+
+                listener.onMessageAdded(documentChange.getDocument().toObject(LocationMessage.class));
+            }
+            break;
+
+            case MODIFIED: {
+                listener.onMessageModified(documentChange.getDocument().toObject(LocationMessage.class), documentChange.getOldIndex());
             }
             break;
 
@@ -291,6 +364,16 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
 
                     case BaseMessage.IMAGE_MESSAGE: {
                         baseMessages.add(documentSnapshot.toObject(ImageMessage.class));
+                    }
+                    break;
+
+                    case BaseMessage.EMOJI_MESSAGE: {
+                        baseMessages.add(documentSnapshot.toObject(EmojiMessage.class));
+                    }
+                    break;
+
+                    case BaseMessage.LOCATION_MESSAGE: {
+                        baseMessages.add(documentSnapshot.toObject(LocationMessage.class));
                     }
                     break;
 

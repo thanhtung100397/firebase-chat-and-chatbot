@@ -1,7 +1,10 @@
 package com.ttt.chat_module.services;
 
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -13,6 +16,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.utils.FirebaseUploadImageHelper;
 import com.ttt.chat_module.models.ChatRoomInfo;
+import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.models.message_models.ImageMessage;
 
 import org.greenrobot.eventbus.EventBus;
@@ -27,10 +31,14 @@ import com.ttt.chat_module.bus_event.ImageItemUploadFailureEvent;
 import com.ttt.chat_module.bus_event.ImageItemUploadSuccessEvent;
 import com.ttt.chat_module.bus_event.SendImageMessageFailureEvent;
 import com.ttt.chat_module.bus_event.SendImageMessageSuccessEvent;
-import com.ttt.chat_module.models.message_models.TextMessage;
+import com.ttt.chat_module.models.notification.NewImageMessageNotification;
+import com.ttt.chat_module.models.notification.NewMessageNotification;
+import com.ttt.chat_module.models.notification.TopicNotification;
 import com.ttt.chat_module.models.wrapper_model.LastMessageWrapper;
 
 public class SendImageMessageService extends Service {
+    private ServiceConnection notificationServiceConnection;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -41,7 +49,7 @@ public class SendImageMessageService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String roomID = intent.getStringExtra(Constants.KEY_IMAGE_FOLDER);
         String folderName = roomID + "_" + (new Date().getTime());
-        String ownerID = intent.getStringExtra(Constants.KEY_OWNER_ID);
+        UserInfo senderInfo = intent.getParcelableExtra(Constants.KEY_OWNER);
         List<String> urisString = intent.getStringArrayListExtra(Constants.KEY_IMAGE_URIS);
         int size = urisString.size();
         if (size != 0) {
@@ -61,7 +69,7 @@ public class SendImageMessageService extends Service {
                     },
                     (mapUrls) -> {
 //                        EventBus.getDefault().post(new AllImageItemsUploadCompleteEvent(roomID, mapUrls));
-                        sendImageMessage(roomID, ownerID, mapUrls);
+                        sendImageMessage(roomID, senderInfo, mapUrls);
                     }, null);
 
         } else {
@@ -70,8 +78,8 @@ public class SendImageMessageService extends Service {
         return START_NOT_STICKY;
     }
 
-    private void sendImageMessage(String roomID, String ownerID, Map<String, String> imageUrls) {
-        ImageMessage imageMessage = new ImageMessage(ownerID, imageUrls);
+    private void sendImageMessage(String roomID, UserInfo senderInfo, Map<String, String> imageUrls) {
+        ImageMessage imageMessage = new ImageMessage(senderInfo.getId(), imageUrls);
         DocumentReference chatRoomRef = FirebaseFirestore.getInstance().collection(Constants.CHAT_ROOMS_COLLECTION)
                 .document(roomID);
 
@@ -79,9 +87,30 @@ public class SendImageMessageService extends Service {
         writeBatch.set(chatRoomRef.collection(ChatRoomInfo.MESSAGES).document(), imageMessage);
         writeBatch.set(chatRoomRef, new LastMessageWrapper(imageMessage), SetOptions.merge());
         writeBatch.commit()
-                .addOnSuccessListener(documentReference -> EventBus.getDefault().post(new SendImageMessageSuccessEvent(roomID)))
+                .addOnSuccessListener(documentReference -> {
+                    sendNewImageMessageNotification(roomID, senderInfo, imageMessage);
+                    EventBus.getDefault().post(new SendImageMessageSuccessEvent(roomID));
+                })
                 .addOnFailureListener(e -> {
                     EventBus.getDefault().post(new SendImageMessageFailureEvent(roomID, imageMessage));
                 });
+    }
+
+    private void sendNewImageMessageNotification(String romID, UserInfo userInfo, ImageMessage imageMessage) {
+        notificationServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                NewMessageNotification notificationPayload = new NewImageMessageNotification(romID, userInfo, imageMessage);
+                TopicNotification<NewMessageNotification> newMessageNotification = new TopicNotification<>(userInfo.getId(), notificationPayload);
+                ((SendNotificationService.SendNotificationBinder) iBinder).getService().sendTopicNotification(newMessageNotification);
+                unbindService(notificationServiceConnection);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+            }
+        };
+        Intent intent = new Intent(this, SendNotificationService.class);
+        bindService(intent, notificationServiceConnection, Context.BIND_AUTO_CREATE);
     }
 }

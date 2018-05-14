@@ -7,7 +7,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.models.ChatRoomInfo;
+import com.ttt.chat_module.models.Path;
 import com.ttt.chat_module.models.TypingState;
+import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.models.UserInfo;
 
 import java.util.List;
@@ -59,14 +61,19 @@ public class ChatActivityInteractorImpl implements ChatActivityInteractor {
         DocumentReference newChatRoomDocRef = FirebaseFirestore.getInstance()
                 .collection(Constants.CHAT_ROOMS_COLLECTION)
                 .document();
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION);
         ChatRoomInfo chatRoomInfo = new ChatRoomInfo(newChatRoomDocRef.getId(), usersInfo);
         FirebaseFirestore.getInstance().runTransaction(transaction -> {
             transaction.set(newChatRoomDocRef, chatRoomInfo);
 
+            String path = Constants.CHAT_ROOMS_COLLECTION + "/" + newChatRoomDocRef.getId();
+
             CollectionReference typingStatesCollectionRef = newChatRoomDocRef.collection(ChatRoomInfo.TYPING_STATES);
             for (UserInfo userInfo : usersInfo) {
                 transaction.set(typingStatesCollectionRef.document(userInfo.getId()), new TypingState());
+                transaction.set(usersRef.document(userInfo.getId()).collection(User.PATHS).document(newChatRoomDocRef.getId()), new Path(Path.CHAT_ROOM_TYPE, path));
             }
+
             return chatRoomInfo;
         }).addOnSuccessListener(aVoid -> listener.onGetChatRoomInfoSuccess(chatRoomInfo))
                 .addOnFailureListener(e -> listener.onRequestError(e.getMessage()));

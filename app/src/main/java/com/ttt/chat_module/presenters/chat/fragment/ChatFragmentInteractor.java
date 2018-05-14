@@ -1,5 +1,6 @@
 package com.ttt.chat_module.presenters.chat.fragment;
 
+import com.ttt.chat_module.models.google_map.Location;
 import com.ttt.chat_module.models.message_models.BaseMessage;
 import com.ttt.chat_module.presenters.BaseInteractor;
 import com.ttt.chat_module.presenters.OnRequestCompleteListener;
@@ -10,6 +11,10 @@ import com.ttt.chat_module.presenters.OnRequestCompleteListener;
 
 public interface ChatFragmentInteractor extends BaseInteractor {
     void sendTextMessage(String roomID, String message, OnSendMessageCompleteListener listener);
+
+    void sendEmojiImageMessage(String roomID, String type, String emojiID, OnSendMessageCompleteListener listener);
+
+    void sendLocationMessage(String roomID, Location location, String address, OnSendMessageCompleteListener listener);
 
     void registerUserVisitStateListener(String roomID, OnUserVisitStateChangeListener listener);
 

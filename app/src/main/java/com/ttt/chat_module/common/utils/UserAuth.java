@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.models.UserInfo;
+import com.ttt.chat_module.models.UserProfile;
 
 /**
  * Created by TranThanhTung on 20/02/2018.
@@ -23,16 +24,9 @@ public class UserAuth {
         return null;
     }
 
-    public static String getUserNotificationKey(Context context) {
+    public static User getUser(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_INFO_SHARE_PREFS, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(User.FCM_TOKEN, null);
-    }
-
-    public static void saveUserNotificationKey(Context context, String notificationKey) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_INFO_SHARE_PREFS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(User.FCM_TOKEN, notificationKey);
-        editor.apply();
+        return new User(sharedPreferences);
     }
 
     public static UserInfo getUserInfo(Context context) {
@@ -48,6 +42,18 @@ public class UserAuth {
         }
         user.writeToSharePreferences(editor);
         editor.apply();
+    }
+
+    public static void saveProfile(Context context, UserProfile userProfile) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_INFO_SHARE_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        userProfile.writeToSharePreferences(editor);
+        editor.apply();
+    }
+
+    public static UserProfile getProfile(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.USER_INFO_SHARE_PREFS, Context.MODE_PRIVATE);
+        return new UserProfile(sharedPreferences);
     }
 
     public static boolean isUserLoggedIn() {

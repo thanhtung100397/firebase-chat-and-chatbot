@@ -1,9 +1,6 @@
 package com.ttt.chat_module.presenters.main;
 
 import com.ttt.chat_module.common.utils.UserAuth;
-import com.ttt.chat_module.presenters.ApplicationInteractor;
-import com.ttt.chat_module.presenters.ApplicationInteractorImpl;
-import com.ttt.chat_module.presenters.ApplicationPresenter;
 import com.ttt.chat_module.presenters.OnRequestCompleteListener;
 
 /**

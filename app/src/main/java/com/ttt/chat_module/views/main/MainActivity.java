@@ -20,13 +20,12 @@ import com.ttt.chat_module.common.adapter.view_pager_adapter.HomeFragmentPagerAd
 import com.ttt.chat_module.common.custom_view.LoadingDialog;
 import com.ttt.chat_module.common.utils.ToastUtils;
 import com.ttt.chat_module.common.utils.UserAuth;
-import com.ttt.chat_module.models.User;
-import com.ttt.chat_module.presenters.BasePresenter;
 import com.ttt.chat_module.presenters.OnRequestCompleteListener;
 import com.ttt.chat_module.presenters.main.MainActivityPresenter;
 import com.ttt.chat_module.presenters.main.MainActivityPresenterImpl;
 import com.ttt.chat_module.views.auth.login.LoginActivity;
 import com.ttt.chat_module.views.base.activity.BaseActivity;
+import com.ttt.chat_module.views.chat_bot.ChatBotActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -114,6 +113,12 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
                     viewPager.setCurrentItem(HomeFragmentPagerAdapter.PROFILE_FRAGMENT_POSITION);
                     drawerLayout.closeDrawer(Gravity.START);
                     return true;
+                }
+
+                case R.id.nav_chat_bot: {
+                    Intent intent = new Intent(MainActivity.this, ChatBotActivity.class);
+                    startActivity(intent);
+                    return false;
                 }
 
                 case R.id.nav_logout: {

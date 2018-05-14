@@ -70,6 +70,32 @@ public class ChatRoom {
             }
             break;
 
+            case BaseMessage.EMOJI_MESSAGE:{
+                if (ownerID.equals(currentUserID)) {
+                    this.lastMessage = context.getString(R.string.you_have_sent_an_emoji);
+                } else {
+                    UserInfo friendInfo = friendsInfo.get(ownerID);
+                    if (friendInfo == null) {
+                        return;
+                    }
+                    this.lastMessage = friendInfo.getFirstName() + " " + context.getString(R.string.has_sent_an_emoji);
+                }
+            }
+            break;
+
+            case BaseMessage.LOCATION_MESSAGE:{
+                if (ownerID.equals(currentUserID)) {
+                    this.lastMessage = context.getString(R.string.you_have_sent_a_location);
+                } else {
+                    UserInfo friendInfo = friendsInfo.get(ownerID);
+                    if (friendInfo == null) {
+                        return;
+                    }
+                    this.lastMessage = friendInfo.getFirstName() + " " + context.getString(R.string.has_sent_a_location);
+                }
+            }
+            break;
+
             default: {
                 break;
             }

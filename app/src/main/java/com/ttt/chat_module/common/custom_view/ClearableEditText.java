@@ -9,7 +9,9 @@ import android.support.design.widget.TextInputEditText;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -140,6 +142,10 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
         a.recycle();
     }
 
+    public void setEnable(boolean enable){
+        editText.setEnabled(enable);
+    }
+
     public void setOnTextClearedListener(OnTextClearedListener onTextClearedListener) {
         this.onTextClearedListener = onTextClearedListener;
     }
@@ -154,13 +160,20 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
 
     public void setError(String text) {
         if(text != null) {
+            ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(getContext().getResources().getColor(android.R.color.white));
+            SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text);
+            spannableStringBuilder.setSpan(foregroundColorSpan, 0, text.length(), 0);
+
             clearButton.setVisibility(GONE);
             setClearButtonVisibility(INVISIBLE);
             isButtonHideByError = true;
             editText.requestFocus();
             editText.setSelection(editText.getText().length());
+
+            editText.setError(spannableStringBuilder);
+        } else {
+            editText.setError(null);
         }
-        editText.setError(text);
     }
 
     public void setEditable(boolean editable) {

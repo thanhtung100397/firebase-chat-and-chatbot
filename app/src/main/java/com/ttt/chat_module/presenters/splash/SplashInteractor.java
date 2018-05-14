@@ -8,5 +8,5 @@ import com.ttt.chat_module.presenters.OnRequestCompleteListener;
  */
 
 public interface SplashInteractor extends BaseInteractor {
-    void updateUserOnlineState(String userID, boolean isOnline, OnRequestCompleteListener listener);
+    void updateUserOnlineStateAndFetchUser(String userID, boolean isOnline, OnGetUserCompleteListener listener);
 }

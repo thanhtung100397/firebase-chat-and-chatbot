@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Chat Module</string>
     <string name="image_description">image</string>
@@ -36,7 +37,7 @@
     <string name="logout">Logout</string>
     <string name="logout_failure">logout failed, please try again</string>
     <string name="sent_message_failed">Send message failed</string>
-    <string name="fetching">fetching…</string>
+    <string name="fetching">Fetching…</string>
     <string name="active_now">Active now</string>
     <string name="offline">Offline</string>
     <string name="pick_image">Pick image</string>
@@ -51,4 +52,44 @@
     <string name="an_image">an image</string>
     <string name="images">images</string>
     <string name="chat_room_not_found">Chat room not found</string>
+    <string name="birthday">Birthday</string>
+    <string name="none">None</string>
+    <string name="phone">Phone</string>
+    <string name="locating">Locating</string>
+    <string name="no_conversation">No conversation</string>
+    <string name="friend_info">Friend information</string>
+    <string name="action_search">Search</string>
+    <string name="submit">Submit</string>
+    <string name="title_chat_bot">Chat bot</string>
+    <string name="you_have_sent_an_emoji">You have sent an emoji</string>
+    <string name="has_sent_an_emoji">has sent an emoji</string>
+    <string name="uploading_task_in_progress">Uploading task in progress</string>
+    <string name="chat_bot_error">Chat bot error</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="selected">selected</string>
+    <string name="pick_avatar">Pick avatar</string>
+    <string name="pick_cover">Pick cover</string>
+    <string name="pick_address">Pick address</string>
+    <string name="enter_address">Enter address</string>
+    <string name="gps_title">GPS</string>
+    <string name="gps_message">this feature require GPS enable</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="auto_locate_failed">Auto locate failed</string>
+    <string name="cannot_locate">Cannot locate</string>
+    <string name="invalid_phone">Invalid phone</string>
+    <string name="user_profile">User profile</string>
+    <string name="you_have_sent_a_location">You have sent a location</string>
+    <string name="has_sent_a_location">has sent a location</string>
+    <string name="sorry_i_cant_do_this_without_your_permission">Xin lỗi, tôi không thể thực hiện tác vụ này nếu chưa được bạn ủy quyền</string>
+    <string name="bot_cant_change_volume">Xin lỗi, tôi không thể tùy chỉnh được âm lượng trên thiết bị này</string>
+    <string name="volume_value_invalid">Mức âm lượng không hợp lệ (0 – 100(%))</string>
+    <string name="no_camera_flash">Thiết bị này không có đèn flash</string>
+    <string name="camera_off">Đèn flash chưa được bật</string>
+    <string name="camera_on">Đèn flash đã được bật</string>
+    <string name="not_found">Không tìm thấy</string>
+    <string name="in_contact">trong danh bạ</string>
+    <string name="search_result_with_keyword">kết quả tìm kiếm với từ khóa</string>
+    <string name="make_dial">Thiết lập quay số</string>
+    <string name="make_call">Thiết lập cuộc gọi vào số</string>
 </resources>

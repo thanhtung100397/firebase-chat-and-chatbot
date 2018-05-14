@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.ttt.chat_module.R;
@@ -13,10 +14,13 @@ import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.utils.ToastUtils;
 import com.ttt.chat_module.models.ChatRoomInfo;
 import com.ttt.chat_module.models.VisitState;
+import com.ttt.chat_module.models.google_map.Location;
 import com.ttt.chat_module.models.message_models.BaseMessage;
+import com.ttt.chat_module.models.message_models.EmojiMessage;
 import com.ttt.chat_module.models.message_models.ImageMessage;
 import com.ttt.chat_module.models.message_models.TextMessage;
 import com.ttt.chat_module.models.UserInfo;
+import com.ttt.chat_module.models.notification.NewEmojiMessageNotification;
 import com.ttt.chat_module.models.notification.NewMessageNotification;
 import com.ttt.chat_module.models.notification.NewTextMessageNotification;
 import com.ttt.chat_module.models.notification.TopicNotification;
@@ -104,12 +108,17 @@ public class ChatFragmentPresenterImpl implements ChatFragmentPresenter {
         context.unbindService(notificationServiceConnection);
     }
 
-    private void sendTextMessageNotification(UserInfo userInfo, BaseMessage baseMessage) {
+    private void sendMessageNotification(UserInfo userInfo, BaseMessage baseMessage) {
         if (sendNotificationServiceInstance != null) {
             NewMessageNotification notificationPayload;
             switch (baseMessage.getType()){
                 case BaseMessage.TEXT_MESSAGE:{
                     notificationPayload = new NewTextMessageNotification(roomID, userInfo, (TextMessage) baseMessage);
+                }
+                break;
+
+                case BaseMessage.EMOJI_MESSAGE:{
+                    notificationPayload = new NewEmojiMessageNotification(roomID, userInfo, (EmojiMessage) baseMessage);
                 }
                 break;
 
@@ -252,24 +261,15 @@ public class ChatFragmentPresenterImpl implements ChatFragmentPresenter {
     }
 
     @Override
-    public void validateSentTextMessage(String message) {
-        if (message.isEmpty()) {
-            return;
-        }
+    public void validateEmojiImageMessage(String type, String emojiID) {
         if (hasUploadingTask) {
-            ToastUtils.quickToast(context, R.string.uploading_task_inprogress);
+            ToastUtils.quickToast(context, R.string.uploading_task_in_progress);
             return;
         }
-        chatFragmentView.clearTypedMessage();
-        chatFragmentInteractor.sendTextMessage(roomID, message, new OnSendMessageCompleteListener() {
+        chatFragmentInteractor.sendEmojiImageMessage(roomID, type, emojiID, new OnSendMessageCompleteListener() {
             @Override
             public void onSendMessageSuccess(BaseMessage message) {
-                for (Map.Entry<String, VisitState> visitStateEntry : mapFriendVisitState.entrySet()) {
-                    sendTextMessageNotification(ownerInfo, message);
-//                    if (visitStateEntry.getValue().getState().equals(VisitState.LEFT_ROOM_STATE)) {
-//                        sendTextMessageNotification(mapFriendsInfo.get(visitStateEntry.getKey()), message);
-//                    }
-                }
+                sendNotificationToLeftRoomFriends(message);
             }
 
             @Override
@@ -280,13 +280,66 @@ public class ChatFragmentPresenterImpl implements ChatFragmentPresenter {
     }
 
     @Override
+    public void validateLocationMessage(Location location, String address) {
+        if(location == null || address == null) {
+            return;
+        }
+        chatFragmentInteractor.sendLocationMessage(roomID, location, address, new OnSendMessageCompleteListener() {
+            @Override
+            public void onSendMessageSuccess(BaseMessage message) {
+                sendNotificationToLeftRoomFriends(message);
+            }
+
+            @Override
+            public void onRequestError(String message) {
+                ToastUtils.quickToast(context, R.string.sent_message_failed);
+            }
+        });
+    }
+
+    @Override
+    public void validateSentTextMessage(String message) {
+        if (message.isEmpty()) {
+            return;
+        }
+        if (hasUploadingTask) {
+            ToastUtils.quickToast(context, R.string.uploading_task_in_progress);
+            return;
+        }
+        chatFragmentView.clearTypedMessage();
+        chatFragmentInteractor.sendTextMessage(roomID, message, new OnSendMessageCompleteListener() {
+            @Override
+            public void onSendMessageSuccess(BaseMessage message) {
+                sendNotificationToLeftRoomFriends(message);
+            }
+
+            @Override
+            public void onRequestError(String message) {
+                ToastUtils.quickToast(context, R.string.sent_message_failed);
+            }
+        });
+    }
+
+    private void sendNotificationToLeftRoomFriends(BaseMessage message) {
+        for (Map.Entry<String, VisitState> visitStateEntry : mapFriendVisitState.entrySet()) {
+            if (visitStateEntry.getValue().getState().equals(VisitState.LEFT_ROOM_STATE)) {
+                sendMessageNotification(mapFriendsInfo.get(visitStateEntry.getKey()), message);
+            }
+        }
+    }
+
+    @Override
     public void validateSentImageMessage(List<Uri> imageUris) {
         if (imageUris.isEmpty()) {
             return;
         }
+        if (hasUploadingTask) {
+            ToastUtils.quickToast(context, R.string.uploading_task_in_progress);
+            return;
+        }
         Intent intent = new Intent(context, SendImageMessageService.class);
         intent.putExtra(Constants.KEY_IMAGE_FOLDER, roomID);
-        intent.putExtra(Constants.KEY_OWNER_ID, ownerInfo.getId());
+        intent.putExtra(Constants.KEY_OWNER, (Parcelable) ownerInfo);
         ArrayList<String> imageUrisString = new ArrayList<>(imageUris.size());
         for (Uri uri : imageUris) {
             imageUrisString.add(uri.toString());

@@ -10,7 +10,6 @@ import com.ttt.chat_module.models.ChatRoomInfo;
 import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.presenters.base_progress.BaseProgressActivityPresenter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

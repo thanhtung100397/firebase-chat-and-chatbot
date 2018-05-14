@@ -7,7 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,8 +18,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -29,10 +35,14 @@ import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter;
 import com.sangcomz.fishbun.define.Define;
 import com.ttt.chat_module.GlideApp;
 import com.ttt.chat_module.R;
+import com.ttt.chat_module.bus_event.EmojiSelectedEvent;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.adapter.recycler_view_adapter.ChatMessageAdapter;
+import com.ttt.chat_module.common.adapter.view_pager_adapter.EmojiPagerAdapter;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
+import com.ttt.chat_module.common.utils.Utils;
 import com.ttt.chat_module.models.ChatRoomInfo;
+import com.ttt.chat_module.models.google_map.Location;
 import com.ttt.chat_module.models.message_models.BaseMessage;
 import com.ttt.chat_module.common.custom_view.ClearableEditText;
 import com.ttt.chat_module.models.UserInfo;
@@ -52,6 +62,8 @@ import com.ttt.chat_module.bus_event.ImageItemUploadFailureEvent;
 import com.ttt.chat_module.bus_event.ImageItemUploadSuccessEvent;
 import com.ttt.chat_module.bus_event.SendImageMessageFailureEvent;
 import com.ttt.chat_module.bus_event.SendImageMessageSuccessEvent;
+import com.ttt.chat_module.views.map.LocationPickerActivity;
+import com.ttt.chat_module.views.user_profile.UserProfileActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,6 +75,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements ChatFragmentView, View.OnClickListener, EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener, TextWatcher {
     private static final int REQUEST_CODE_PICK_IMAGE = 0;
+    private static final int REQUEST_CODE_PICK_LOCATION = 1;
 
     @BindView(R.id.tool_bar)
     Toolbar toolbar;
@@ -83,6 +96,8 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     ImageButton btnCamera;
     @BindView(R.id.btn_emoji)
     ImageButton btnEmoji;
+    @BindView(R.id.btn_location)
+    ImageButton btnLocation;
     @BindView(R.id.btn_send)
     ImageButton btnSend;
     @BindView(R.id.progress_first_loading_messages)
@@ -92,7 +107,15 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     @BindView(R.id.btn_retry)
     Button btnRetry;
 
+    @BindView(R.id.ln_emoji)
+    LinearLayout lnEmoji;
+    @BindView(R.id.tab_emoji)
+    TabLayout tabEmoji;
+    @BindView(R.id.emoji_pager)
+    ViewPager emojiPager;
+
     private ChatMessageAdapter chatMessageAdapter;
+    private EmojiPagerAdapter emojiPagerAdapter;
 
     @Override
     protected int getLayoutResources() {
@@ -131,8 +154,17 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
         btnEmoji.setOnClickListener(this);
         btnRetry.setOnClickListener(this);
         btnCamera.setOnClickListener(this);
+        btnLocation.setOnClickListener(this);
 
         edtMessage.addTextChangeListener(this);
+        edtMessage.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean isFocused) {
+                if(isFocused) {
+                    showEmojiSelector(false, false);
+                }
+            }
+        });
 
         if (getPresenter().isCoupleChatRoom()) {
             initCoupleChatRoom();
@@ -152,6 +184,27 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
         linearLayoutManager.setReverseLayout(true);
         rcMessages.setLayoutManager(linearLayoutManager);
         rcMessages.setAdapter(chatMessageAdapter);
+
+        initEmojiSelector(context);
+    }
+
+    private void initEmojiSelector(Context context) {
+        lnEmoji.setVisibility(View.GONE);
+        emojiPagerAdapter = new EmojiPagerAdapter(context, getChildFragmentManager());
+        emojiPager.setAdapter(emojiPagerAdapter);
+        emojiPagerAdapter.setupTabLayout(tabEmoji, emojiPager);
+    }
+
+    private void showEmojiSelector(boolean isShow, boolean isAnimate) {
+        if (isShow) {
+            if(isAnimate) {
+                TransitionManager.beginDelayedTransition((ViewGroup) getView());
+            }
+            Utils.hideSoftKeyBoard(getActivity(), edtMessage);
+            lnEmoji.setVisibility(View.VISIBLE);
+        } else {
+            lnEmoji.setVisibility(View.GONE);
+        }
     }
 
     private void initCoupleChatRoom() {
@@ -169,10 +222,25 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.chat_room_menu, menu);
+        menu.findItem(R.id.action_friend_info).setVisible(getPresenter().isCoupleChatRoom());
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 getActivity().onBackPressed();
+            }
+            break;
+
+            case R.id.action_friend_info:{
+                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                String friendID = getPresenter().getMapFriendsInfo().entrySet().iterator().next().getKey();
+                intent.putExtra(Constants.KEY_USER_ID, friendID);
+                startActivity(intent);
             }
             break;
 
@@ -201,8 +269,8 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
         if (!edtMessage.getText().isEmpty()) {
             presenter.changeUserTypingState(true);
         }
-        if(!presenter.isUserInChatRoom()) {
-           presenter.enterRoom();
+        if (!presenter.isUserInChatRoom()) {
+            presenter.enterRoom();
         }
     }
 
@@ -211,7 +279,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
         super.onStop();
         ChatFragmentPresenter presenter = getPresenter();
         presenter.changeUserTypingState(false);
-        if(presenter.isUserInChatRoom()) {
+        if (presenter.isUserInChatRoom()) {
             presenter.leftRoom();
         }
     }
@@ -259,8 +327,13 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
             }
             break;
 
-            case R.id.btn_emoji: {
+            case R.id.btn_location:{
+                startActivityForResult(new Intent(getActivity(), LocationPickerActivity.class), REQUEST_CODE_PICK_LOCATION);
+            }
+            break;
 
+            case R.id.btn_emoji: {
+                showEmojiSelector(lnEmoji.getVisibility() != View.VISIBLE, true);
             }
             break;
 
@@ -288,10 +361,25 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
             }
             break;
 
+            case REQUEST_CODE_PICK_LOCATION:{
+                if (resultCode == Activity.RESULT_OK) {
+                    String pickedAddress = data.getStringExtra(Constants.ADDRESS);
+                    Location pickedLocation = (Location) data.getSerializableExtra(Constants.LOCATION);
+                    getPresenter().validateLocationMessage(pickedLocation, pickedAddress);
+                }
+            }
+            break;
+
             default: {
                 break;
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEmojiSelected(EmojiSelectedEvent emojiSelectedEvent) {
+        showEmojiSelector(false, false);
+        getPresenter().validateEmojiImageMessage(emojiSelectedEvent.getType(), emojiSelectedEvent.getEmojiID());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -342,7 +430,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
 
     @Override
     public void updateMessageState(BaseMessage baseMessage, int position) {
-        chatMessageAdapter.updateTextMessage(baseMessage, position);
+        chatMessageAdapter.updateMessage(baseMessage, position);
     }
 
     @Override

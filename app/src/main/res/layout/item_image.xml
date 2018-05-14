@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.ttt.chat_module.common.custom_view.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <ImageView
         android:id="@+id/img_view"
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/image_placeholder"/>
+        android:src="@drawable/image_placeholder"
+        android:layout_centerHorizontal="true"/>
 
 </com.ttt.chat_module.common.custom_view.SquareRelativeLayout>

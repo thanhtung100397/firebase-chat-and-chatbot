@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_scrolling"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:scrimAnimationDuration="200"
+            app:titleEnabled="false">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/img_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="256dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/wall_placeholder"
+                    android:tint="#32000000" />
+
+                <ImageButton
+                    android:id="@+id/btn_cover"
+                    android:layout_width="@dimen/camera_button_size"
+                    android:layout_height="@dimen/camera_button_size"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@id/img_avatar"
+                    android:layout_marginEnd="@dimen/edit_text_padding"
+                    android:layout_marginRight="@dimen/edit_text_padding"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_camera_white" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/img_avatar"
+                    android:layout_width="@dimen/large_avatar_size"
+                    android:layout_height="@dimen/large_avatar_size"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="?actionBarSize"
+                    android:src="@drawable/avatar_placeholder"
+                    app:civ_border_color="@android:color/white"
+                    app:civ_border_width="3dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_avatar"
+                    android:layout_width="@dimen/camera_button_size"
+                    android:layout_height="@dimen/camera_button_size"
+                    android:layout_alignBottom="@id/img_avatar"
+                    android:layout_alignEnd="@id/img_avatar"
+                    android:layout_alignRight="@id/img_avatar"
+                    android:background="@drawable/accent_circle_background"
+                    android:src="@drawable/ic_camera_white" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/img_cover"
+                    android:layout_marginBottom="@dimen/edit_text_padding"
+                    android:gravity="center_horizontal">
+
+                    <com.ttt.chat_module.common.custom_view.ClearableEditText
+                        android:id="@+id/edt_last_name"
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/last_name"
+                        android:inputType="text"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/font_size_22dp"
+                        app:clearButtonDrawable="@drawable/ic_close"
+                        app:edtGravityCentered="true" />
+
+                    <com.ttt.chat_module.common.custom_view.ClearableEditText
+                        android:id="@+id/edt_first_name"
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/first_name"
+                        android:inputType="text"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/font_size_22dp"
+                        app:clearButtonDrawable="@drawable/ic_close"
+                        app:edtGravityCentered="true" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:focusable="true"
+                android:theme="@style/ToolBarTheme"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".view.user.edit_user_profile.EditUserProfileActivity">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/img_cover"
+            android:orientation="vertical"
+            android:padding="@dimen/item_padding">
+
+            <TextView
+                style="@style/editTextLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/birthday" />
+
+            <com.ttt.chat_module.common.custom_view.ClearableNotEditableText
+                android:id="@+id/edt_birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/none"
+                android:textSize="@dimen/font_size_20dp"
+                app:clearButtonDrawable="@drawable/ic_close_gray"
+                app:edtBackground="@drawable/round_border_edit_text"
+                app:edtEditable="false"
+                android:layout_marginBottom="@dimen/edit_text_space_bottom"/>
+
+            <TextView
+                style="@style/editTextLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/email" />
+
+            <com.ttt.chat_module.common.custom_view.ClearableEditText
+                android:id="@+id/edt_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/edit_text_space_bottom"
+                android:hint="@string/none"
+                android:textSize="@dimen/font_size_20dp"
+                app:clearButtonDrawable="@drawable/ic_close_gray"
+                app:edtBackground="@drawable/round_border_edit_text" />
+
+            <TextView
+                style="@style/editTextLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/phone" />
+
+            <com.ttt.chat_module.common.custom_view.ClearableEditText
+                android:id="@+id/edt_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/edit_text_space_bottom"
+                android:hint="@string/none"
+                android:inputType="phone"
+                android:textSize="@dimen/font_size_20dp"
+                app:clearButtonDrawable="@drawable/ic_close_gray"
+                app:edtBackground="@drawable/round_border_edit_text"
+                app:edtMaxLength="11" />
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

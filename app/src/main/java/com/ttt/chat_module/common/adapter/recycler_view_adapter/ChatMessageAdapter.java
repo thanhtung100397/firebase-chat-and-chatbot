@@ -2,6 +2,7 @@ package com.ttt.chat_module.common.adapter.recycler_view_adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.transition.TransitionManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.ttt.chat_module.GlideApp;
 import com.ttt.chat_module.R;
 import com.ttt.chat_module.common.Constants;
@@ -17,11 +25,12 @@ import com.ttt.chat_module.common.custom_view.SpaceItemDecoration;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.ttt.chat_module.models.ImageItem;
 import com.ttt.chat_module.models.message_models.BaseMessage;
+import com.ttt.chat_module.models.message_models.EmojiMessage;
 import com.ttt.chat_module.models.message_models.ImageMessage;
+import com.ttt.chat_module.models.message_models.LocationMessage;
 import com.ttt.chat_module.models.message_models.TextMessage;
 import com.ttt.chat_module.models.UserInfo;
-import com.ttt.chat_module.models.wrapper_model.FriendMessageWrapper;
-import com.ttt.chat_module.models.wrapper_model.OwnerMessageWrapper;
+import com.ttt.chat_module.models.wrapper_model.MessageWrapper;
 import com.ttt.chat_module.views.image_details.ImageDetailActivity;
 
 import java.util.Date;
@@ -30,6 +39,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by TranThanhTung on 20/02/2018.
@@ -37,18 +47,26 @@ import butterknife.ButterKnife;
 
 public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
     public static final int VIEW_TYPE_FRIEND_TYPING = -2;
+
+    public static final int VIEW_TYPE_OWNED_TEXT_MESSAGE = 1;
+    public static final int VIEW_TYPE_OWNED_IMAGE_MESSAGE = 3;
+    public static final int VIEW_TYPE_OWNED_EMOJI_MESSAGE = 5;
+    public static final int VIEW_TYPE_OWNED_LOCATION_MESSAGE = 7;
+
     public static final int VIEW_TYPE_FRIEND_TEXT_MESSAGE = 2;
-    public static final int VIEW_TYPE_OWNER_IMAGE_MESSAGE = 3;
+    public static final int VIEW_TYPE_FRIEND_IMAGE_MESSAGE = 4;
+    public static final int VIEW_TYPE_FRIEND_EMOJI_MESSAGE = 6;
+    public static final int VIEW_TYPE_FRIEND_LOCATION_MESSAGE = 8;
 
     private UserInfo ownerInfo;
-    private Map<String, UserInfo> mapFriendsInfo;
-    private boolean isFriendTypingMessageShowing;
+    private Map<String, UserInfo> mapOppositesInfo;
+    private boolean isOppositeTypingMessageShowing;
     private RecyclerView.RecycledViewPool viewPool;
 
-    public ChatMessageAdapter(Context context, UserInfo ownerInfo, Map<String, UserInfo> mapFriendsInfo) {
+    public ChatMessageAdapter(Context context, UserInfo ownerInfo, Map<String, UserInfo> mapOppositesInfo) {
         super(context, false);
         this.ownerInfo = ownerInfo;
-        this.mapFriendsInfo = mapFriendsInfo;
+        this.mapOppositesInfo = mapOppositesInfo;
         this.viewPool = new RecyclerView.RecycledViewPool();
     }
 
@@ -69,7 +87,7 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
         switch (viewType) {
             case VIEW_TYPE_FRIEND_TYPING: {
                 View itemView = getInflater().inflate(R.layout.item_friend_typing, parent, false);
-                result = new FriendTypingViewHolder(itemView);
+                result = new OppositeTypingViewHolder(itemView);
             }
             break;
 
@@ -78,20 +96,60 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
             }
             break;
 
-            case VIEW_TYPE_OWNER_IMAGE_MESSAGE: {
+            //------------------------------------------------------------------------------------//
+
+            case VIEW_TYPE_OWNED_TEXT_MESSAGE: {
+                View itemView = getInflater().inflate(R.layout.item_owned_text_message, parent, false);
+                result = new OwnedTextMessageViewHolder(itemView);
+            }
+            break;
+
+            case VIEW_TYPE_OWNED_IMAGE_MESSAGE: {
                 View itemView = getInflater().inflate(R.layout.item_owned_image_message, parent, false);
-                result = new OwnerImageMessageViewHolder(itemView, viewPool);
+                result = new OwnedImageMessageViewHolder(itemView, viewPool, true);
+            }
+            break;
+
+            case VIEW_TYPE_OWNED_EMOJI_MESSAGE: {
+                View itemView = getInflater().inflate(R.layout.item_owned_emoji_message, parent, false);
+                result = new OwnedEmojiMessageViewHolder(itemView);
+            }
+            break;
+
+            case VIEW_TYPE_OWNED_LOCATION_MESSAGE: {
+                View itemView = getInflater().inflate(R.layout.item_owned_location_message, parent, false);
+                result = new OwnedLocationMessageViewHolder(itemView);
+            }
+            break;
+
+            //------------------------------------------------------------------------------------//
+
+            case VIEW_TYPE_FRIEND_IMAGE_MESSAGE: {
+                View itemView = getInflater().inflate(R.layout.item_friend_image_message, parent, false);
+                result = new OppositeImageMessageViewHolder(itemView, viewPool);
             }
             break;
 
             case VIEW_TYPE_FRIEND_TEXT_MESSAGE: {
-                View itemView = getInflater().inflate(R.layout.item_friend_message, parent, false);
-                result = new FriendTextMessageViewHolder(itemView);
+                View itemView = getInflater().inflate(R.layout.item_friend_text_message, parent, false);
+                result = new OppositeTextMessageViewHolder(itemView);
+            }
+            break;
+
+            case VIEW_TYPE_FRIEND_EMOJI_MESSAGE: {
+                View itemView = getInflater().inflate(R.layout.item_friend_emoji_message, parent, false);
+                result = new OppositeEmojiMessageViewHolder(itemView);
+            }
+            break;
+
+            case VIEW_TYPE_FRIEND_LOCATION_MESSAGE: {
+                View itemView = getInflater().inflate(R.layout.item_friend_location_message, parent, false);
+                result = new OppositeLocationMessageViewHolder(itemView);
             }
             break;
 
             default: {
-                result = initNormalViewHolder(parent);
+                result = null;
             }
             break;
         }
@@ -99,35 +157,34 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
     }
 
     public void showFriendTypingMessage(String friendID) {
-        if (isFriendTypingMessageShowing) {
+        if (isOppositeTypingMessageShowing) {
             updateModel(0, friendID, false);
         } else {
             addModel(0, friendID, VIEW_TYPE_FRIEND_TYPING, true);
-            isFriendTypingMessageShowing = true;
+            isOppositeTypingMessageShowing = true;
         }
     }
 
     public void hideFriendTypingMessage(String friendID) {
-        if (isFriendTypingMessageShowing) {
+        if (isOppositeTypingMessageShowing) {
             String typingFriendID = getItem(0, String.class);
             if (typingFriendID.equals(friendID)) {
                 removeModel(0);
-                isFriendTypingMessageShowing = false;
+                isOppositeTypingMessageShowing = false;
             }
         }
     }
 
     @Override
     protected RecyclerView.ViewHolder initNormalViewHolder(ViewGroup parent) {
-        View itemView = getInflater().inflate(R.layout.item_owned_message, parent, false);
-        return new OwnedTextMessageViewHolder(itemView);
+        return null;
     }
 
     @Override
     protected void solvedOnBindViewHolder(RecyclerView.ViewHolder viewHolder, int viewType, int position) {
         switch (viewType) {
             case VIEW_TYPE_FRIEND_TYPING: {
-                bindFriendTypingViewHolder((FriendTypingViewHolder) viewHolder, position);
+                bindFriendTypingViewHolder((OppositeTypingViewHolder) viewHolder, position);
             }
             break;
 
@@ -136,45 +193,158 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
             }
             break;
 
-            case VIEW_TYPE_OWNER_IMAGE_MESSAGE: {
-                bindOwnerImageMessageViewHolder((OwnerImageMessageViewHolder) viewHolder, position);
+            //------------------------------------------------------------------------------------//
+
+            case VIEW_TYPE_OWNED_TEXT_MESSAGE: {
+                bindTextMessageViewHolder((OwnedTextMessageViewHolder) viewHolder, position);
             }
             break;
 
+            case VIEW_TYPE_OWNED_IMAGE_MESSAGE: {
+                bindImageMessageViewHolder((OwnedImageMessageViewHolder) viewHolder, position);
+            }
+            break;
+
+            case VIEW_TYPE_OWNED_EMOJI_MESSAGE: {
+                bindEmojiMessageViewHolder((OwnedEmojiMessageViewHolder) viewHolder, position);
+            }
+            break;
+
+            case VIEW_TYPE_OWNED_LOCATION_MESSAGE: {
+                bindLocationMessageViewHolder((OwnedLocationMessageViewHolder) viewHolder, position);
+            }
+            break;
+
+            //------------------------------------------------------------------------------------//
+
             case VIEW_TYPE_FRIEND_TEXT_MESSAGE: {
-                bindFriendMessageViewHolder((FriendTextMessageViewHolder) viewHolder, position);
+                bindFriendTextMessageViewHolder((OppositeTextMessageViewHolder) viewHolder, position);
+            }
+            break;
+
+            case VIEW_TYPE_FRIEND_IMAGE_MESSAGE: {
+                bindFriendImageMessageViewHolder((OppositeImageMessageViewHolder) viewHolder, position);
+            }
+            break;
+
+            case VIEW_TYPE_FRIEND_EMOJI_MESSAGE: {
+                bindFriendEmojiMessageViewHolder((OppositeEmojiMessageViewHolder) viewHolder, position);
+            }
+            break;
+
+            case VIEW_TYPE_FRIEND_LOCATION_MESSAGE: {
+                bindFriendLocationMessageViewHolder((OppositeLocationMessageViewHolder) viewHolder, position);
             }
             break;
 
             default: {
-                bindNormalViewHolder((NormalViewHolder) viewHolder, position);
+                break;
             }
-            break;
         }
     }
 
-    private void bindOwnerImageMessageViewHolder(OwnerImageMessageViewHolder holder, int position) {
-        OwnerMessageWrapper messageWrapper = getItem(position, OwnerMessageWrapper.class);
+    private MessageWrapper bindMessageViewHolder(BaseMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = getItem(position, MessageWrapper.class);
+
+        if (messageWrapper.isSeenExpanded()) {
+            holder.expandSeenView(messageWrapper);
+        } else {
+            holder.collapseSeenView(messageWrapper);
+        }
+
+        if (messageWrapper.isDateExpanded()) {
+            holder.expandDateView(messageWrapper);
+        } else {
+            holder.collapseDateView(messageWrapper);
+        }
+
+        return messageWrapper;
+    }
+
+    private MessageWrapper bindTextMessageViewHolder(OwnedTextMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = bindMessageViewHolder(holder, position);
+        TextMessage textMessage = (TextMessage) messageWrapper.getMessage();
+
+        holder.txtMessage.setText(textMessage.getMessage());
+
+        return messageWrapper;
+    }
+
+    private MessageWrapper bindImageMessageViewHolder(OwnedImageMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = bindMessageViewHolder(holder, position);
         ImageMessage imageMessage = (ImageMessage) messageWrapper.getMessage();
 
         holder.imageItemAdapter.refreshImageItems(imageMessage.getImages());
 
-        if (messageWrapper.isSeenExpanded()) {
-            holder.expandSeenView(false, messageWrapper);
-        } else {
-            holder.collapseSeenView(false, messageWrapper);
-        }
-
-        if (messageWrapper.isDateExpanded()) {
-            holder.expandDateView(false, messageWrapper);
-        } else {
-            holder.collapseDateView(false, messageWrapper);
-        }
+        return messageWrapper;
     }
 
-    private void bindFriendTypingViewHolder(FriendTypingViewHolder holder, int position) {
+    private MessageWrapper bindEmojiMessageViewHolder(OwnedEmojiMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = bindMessageViewHolder(holder, position);
+        EmojiMessage emojiMessage = (EmojiMessage) messageWrapper.getMessage();
+
+        String path = Constants.ABSOLUTE_EMOJI_ASSETS_FOLDER_PATH + "/" + emojiMessage.getEmojiGroup() + "/" + emojiMessage.getEmojiID();
+        GlideApp.with(getContext())
+                .load(Uri.parse(path))
+                .centerInside()
+                .into(holder.imgEmoji);
+
+        return messageWrapper;
+    }
+
+    private MessageWrapper bindLocationMessageViewHolder(OwnedLocationMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = bindMessageViewHolder(holder, position);
+        LocationMessage locationMessage = (LocationMessage) messageWrapper.getMessage();
+
+        LatLng latLng = new LatLng(locationMessage.getLat(), locationMessage.getLon());
+        holder.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
+        holder.googleMap.addMarker(new MarkerOptions()
+                .title(locationMessage.getAddress())
+                .position(latLng))
+                .showInfoWindow();
+
+        return messageWrapper;
+    }
+
+    private void bindFriendTextMessageViewHolder(OppositeTextMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = bindTextMessageViewHolder(holder, position);
+
+        GlideApp.with(getContext())
+                .load(mapOppositesInfo.get(messageWrapper.getMessage().getOwnerID()).getAvatarUrl())
+                .placeholder(R.drawable.avatar_placeholder)
+                .into(holder.imgAvatar);
+    }
+
+    private void bindFriendImageMessageViewHolder(OppositeImageMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = bindImageMessageViewHolder(holder, position);
+
+        GlideApp.with(getContext())
+                .load(mapOppositesInfo.get(messageWrapper.getMessage().getOwnerID()).getAvatarUrl())
+                .placeholder(R.drawable.avatar_placeholder)
+                .into(holder.imgAvatar);
+    }
+
+    private void bindFriendEmojiMessageViewHolder(OppositeEmojiMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = bindEmojiMessageViewHolder(holder, position);
+
+        GlideApp.with(getContext())
+                .load(mapOppositesInfo.get(messageWrapper.getMessage().getOwnerID()).getAvatarUrl())
+                .placeholder(R.drawable.avatar_placeholder)
+                .into(holder.imgAvatar);
+    }
+
+    private void bindFriendLocationMessageViewHolder(OppositeLocationMessageViewHolder holder, int position) {
+        MessageWrapper messageWrapper = bindLocationMessageViewHolder(holder, position);
+
+        GlideApp.with(getContext())
+                .load(mapOppositesInfo.get(messageWrapper.getMessage().getOwnerID()).getAvatarUrl())
+                .placeholder(R.drawable.avatar_placeholder)
+                .into(holder.imgAvatar);
+    }
+
+    private void bindFriendTypingViewHolder(OppositeTypingViewHolder holder, int position) {
         String userTypingID = getItem(position, String.class);
-        UserInfo userInfo = mapFriendsInfo.get(userTypingID);
+        UserInfo userInfo = mapOppositesInfo.get(userTypingID);
 
         GlideApp.with(getContext())
                 .load(userInfo.getAvatarUrl())
@@ -182,32 +352,14 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
                 .into(holder.imgAvatar);
     }
 
-    private void bindFriendMessageViewHolder(FriendTextMessageViewHolder holder, int position) {
-        FriendMessageWrapper messageWrapper = getItem(position, FriendMessageWrapper.class);
-        TextMessage textMessage = (TextMessage) messageWrapper.getMessage();
-
-        GlideApp.with(getContext())
-                .load(mapFriendsInfo.get(textMessage.getOwnerID()).getAvatarUrl())
-                .placeholder(R.drawable.avatar_placeholder)
-                .into(holder.imgAvatar);
-
-        holder.txtMessage.setText(textMessage.getMessage());
-
-        if (messageWrapper.isExpanded()) {
-            holder.expandView(false, messageWrapper);
-        } else {
-            holder.collapseView(false, messageWrapper);
-        }
-    }
-
     private String generateSeenState(Map<String, Boolean> seenBy) {
         if (seenBy != null && !seenBy.isEmpty()) {
             int size = seenBy.size();
-            if (size == 1 && seenBy.containsKey(ownerInfo.getEmail())) {
+            if (size == 1 && seenBy.containsKey(ownerInfo.getId())) {
                 return getContext().getString(R.string.seen);
             }
             StringBuilder result = new StringBuilder(getContext().getString(R.string.seen_by));
-            for (Map.Entry<String, UserInfo> entry : mapFriendsInfo.entrySet()) {
+            for (Map.Entry<String, UserInfo> entry : mapOppositesInfo.entrySet()) {
                 if (seenBy.containsKey(entry.getKey())) {
                     result.append(" ").append(entry.getValue().getFirstName());
                 }
@@ -219,29 +371,7 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
 
     @Override
     protected void bindNormalViewHolder(NormalViewHolder holder, int position) {
-        OwnerMessageWrapper messageWrapper = getItem(position, OwnerMessageWrapper.class);
-        TextMessage textMessage = (TextMessage) messageWrapper.getMessage();
 
-        OwnedTextMessageViewHolder ownedTextMessageViewHolder = (OwnedTextMessageViewHolder) holder;
-
-        ownedTextMessageViewHolder.txtMessage.setText(textMessage.getMessage());
-        if (textMessage.getCreatedDate() == null) {
-            ownedTextMessageViewHolder.txtMessage.getBackground().setLevel(0);
-        } else {
-            ownedTextMessageViewHolder.txtMessage.getBackground().setLevel(1);
-        }
-
-        if (messageWrapper.isSeenExpanded()) {
-            ownedTextMessageViewHolder.expandSeenView(false, messageWrapper);
-        } else {
-            ownedTextMessageViewHolder.collapseSeenView(false, messageWrapper);
-        }
-
-        if (messageWrapper.isDateExpanded()) {
-            ownedTextMessageViewHolder.expandDateView(false, messageWrapper);
-        } else {
-            ownedTextMessageViewHolder.collapseDateView(false, messageWrapper);
-        }
     }
 
     private boolean isOwnerMessage(BaseMessage baseMessage) {
@@ -252,12 +382,22 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
         if (isOwnerMessage(baseMessage)) {
             switch (baseMessage.getType()) {
                 case BaseMessage.TEXT_MESSAGE: {
-                    addModel(isFriendTypingMessageShowing ? 1 : 0, new OwnerMessageWrapper(baseMessage), VIEW_TYPE_NORMAL, true);
+                    addModel(isOppositeTypingMessageShowing ? 1 : 0, new MessageWrapper(baseMessage), VIEW_TYPE_OWNED_TEXT_MESSAGE, true);
                 }
                 break;
 
                 case BaseMessage.IMAGE_MESSAGE: {
-                    addModel(isFriendTypingMessageShowing ? 1 : 0, new OwnerMessageWrapper(baseMessage), VIEW_TYPE_OWNER_IMAGE_MESSAGE, true);
+                    addModel(isOppositeTypingMessageShowing ? 1 : 0, new MessageWrapper(baseMessage), VIEW_TYPE_OWNED_IMAGE_MESSAGE, true);
+                }
+                break;
+
+                case BaseMessage.EMOJI_MESSAGE: {
+                    addModel(isOppositeTypingMessageShowing ? 1 : 0, new MessageWrapper(baseMessage), VIEW_TYPE_OWNED_EMOJI_MESSAGE, true);
+                }
+                break;
+
+                case BaseMessage.LOCATION_MESSAGE: {
+                    addModel(isOppositeTypingMessageShowing ? 1 : 0, new MessageWrapper(baseMessage), VIEW_TYPE_OWNED_LOCATION_MESSAGE, true);
                 }
                 break;
 
@@ -268,12 +408,22 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
         } else {
             switch (baseMessage.getType()) {
                 case BaseMessage.TEXT_MESSAGE: {
-                    addModel(isFriendTypingMessageShowing ? 1 : 0, new FriendMessageWrapper(baseMessage), VIEW_TYPE_FRIEND_TEXT_MESSAGE, true);
+                    addModel(isOppositeTypingMessageShowing ? 1 : 0, new MessageWrapper(baseMessage), VIEW_TYPE_FRIEND_TEXT_MESSAGE, true);
                 }
                 break;
 
                 case BaseMessage.IMAGE_MESSAGE: {
-                    //TODO
+                    addModel(isOppositeTypingMessageShowing ? 1 : 0, new MessageWrapper(baseMessage), VIEW_TYPE_FRIEND_IMAGE_MESSAGE, true);
+                }
+                break;
+
+                case BaseMessage.EMOJI_MESSAGE: {
+                    addModel(isOppositeTypingMessageShowing ? 1 : 0, new MessageWrapper(baseMessage), VIEW_TYPE_FRIEND_EMOJI_MESSAGE, true);
+                }
+                break;
+
+                case BaseMessage.LOCATION_MESSAGE: {
+                    addModel(isOppositeTypingMessageShowing ? 1 : 0, new MessageWrapper(baseMessage), VIEW_TYPE_FRIEND_LOCATION_MESSAGE, true);
                 }
                 break;
 
@@ -289,12 +439,22 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
             if (isOwnerMessage(baseMessage)) {
                 switch (baseMessage.getType()) {
                     case BaseMessage.TEXT_MESSAGE: {
-                        addModel(new OwnerMessageWrapper(baseMessage), VIEW_TYPE_NORMAL, false);
+                        addModel(new MessageWrapper(baseMessage), VIEW_TYPE_OWNED_TEXT_MESSAGE, false);
                     }
                     break;
 
                     case BaseMessage.IMAGE_MESSAGE: {
-                        addModel(new OwnerMessageWrapper(baseMessage), VIEW_TYPE_OWNER_IMAGE_MESSAGE, false);
+                        addModel(new MessageWrapper(baseMessage), VIEW_TYPE_OWNED_IMAGE_MESSAGE, false);
+                    }
+                    break;
+
+                    case BaseMessage.EMOJI_MESSAGE: {
+                        addModel(new MessageWrapper(baseMessage), VIEW_TYPE_OWNED_EMOJI_MESSAGE, false);
+                    }
+                    break;
+
+                    case BaseMessage.LOCATION_MESSAGE: {
+                        addModel(new MessageWrapper(baseMessage), VIEW_TYPE_OWNED_LOCATION_MESSAGE, false);
                     }
                     break;
 
@@ -306,12 +466,22 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
             } else {
                 switch (baseMessage.getType()) {
                     case BaseMessage.TEXT_MESSAGE: {
-                        addModel(new FriendMessageWrapper(baseMessage), VIEW_TYPE_FRIEND_TEXT_MESSAGE, false);
+                        addModel(new MessageWrapper(baseMessage), VIEW_TYPE_FRIEND_TEXT_MESSAGE, false);
                     }
                     break;
 
                     case BaseMessage.IMAGE_MESSAGE: {
-                        //TODO
+                        addModel(new MessageWrapper(baseMessage), VIEW_TYPE_FRIEND_IMAGE_MESSAGE, false);
+                    }
+                    break;
+
+                    case BaseMessage.EMOJI_MESSAGE: {
+                        addModel(new MessageWrapper(baseMessage), VIEW_TYPE_FRIEND_EMOJI_MESSAGE, false);
+                    }
+                    break;
+
+                    case BaseMessage.LOCATION_MESSAGE: {
+                        addModel(new MessageWrapper(baseMessage), VIEW_TYPE_FRIEND_LOCATION_MESSAGE, false);
                     }
                     break;
 
@@ -324,62 +494,55 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
         }
     }
 
-    public void updateTextMessage(BaseMessage baseMessage, int position) {
-        if (isOwnerMessage(baseMessage)) {
-            OwnerMessageWrapper messageWrapper = getItem(isFriendTypingMessageShowing ? position + 1 : position, OwnerMessageWrapper.class);
-            messageWrapper.getMessage().update(baseMessage);
-        } else {
-            FriendMessageWrapper messageWrapper = getItem(isFriendTypingMessageShowing ? position + 1 : position, FriendMessageWrapper.class);
-            messageWrapper.getMessage().update(baseMessage);
-        }
+    public void updateMessage(BaseMessage baseMessage, int position) {
+        MessageWrapper messageWrapper = getItem(isOppositeTypingMessageShowing ? position + 1 : position, MessageWrapper.class);
+        messageWrapper.getMessage().update(baseMessage);
         notifyItemChanged(position);
     }
 
     public void showOwnerImageMessageUploaded(String url, int imagePosition) {
-        int position = isFriendTypingMessageShowing ? 1 : 0;
+        int position = isOppositeTypingMessageShowing ? 1 : 0;
         RecyclerView recyclerView = getRecyclerView();
         View view = recyclerView.getChildAt(position);
         if (view != null) {
             RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
-            if (viewHolder instanceof OwnerImageMessageViewHolder) {
-                ((OwnerImageMessageViewHolder) viewHolder).imageItemAdapter.updateImageItem(imagePosition, url);
+            if (viewHolder instanceof OwnedImageMessageViewHolder) {
+                ((OwnedImageMessageViewHolder) viewHolder).imageItemAdapter.updateImageItem(imagePosition, url);
             }
         }
     }
 
     public void showOwnerImageMessageError() {
-        int position = isFriendTypingMessageShowing ? 1 : 0;
+        int position = isOppositeTypingMessageShowing ? 1 : 0;
         RecyclerView recyclerView = getRecyclerView();
         View view = recyclerView.getChildAt(position);
         if (view != null) {
             RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
-            if (viewHolder instanceof OwnerImageMessageViewHolder) {
-                ((OwnerImageMessageViewHolder) viewHolder).imageItemAdapter.showError();
+            if (viewHolder instanceof OwnedImageMessageViewHolder) {
+                ((OwnedImageMessageViewHolder) viewHolder).imageItemAdapter.showError();
             }
         }
     }
 
     public void showUploadingNextImageMessage() {
-        int position = isFriendTypingMessageShowing ? 1 : 0;
+        int position = isOppositeTypingMessageShowing ? 1 : 0;
         RecyclerView recyclerView = getRecyclerView();
         View view = recyclerView.getChildAt(position);
         if (view != null) {
             RecyclerView.ViewHolder viewHolder = recyclerView.getChildViewHolder(view);
-            if (viewHolder instanceof OwnerImageMessageViewHolder) {
-                ((OwnerImageMessageViewHolder) viewHolder).imageItemAdapter.uploadNextImage();
+            if (viewHolder instanceof OwnedImageMessageViewHolder) {
+                ((OwnedImageMessageViewHolder) viewHolder).imageItemAdapter.uploadNextImage();
             }
         }
     }
 
-    class OwnedTextMessageViewHolder extends NormalViewHolder implements View.OnClickListener {
-        @BindView(R.id.txt_message)
-        TextView txtMessage;
+    abstract class BaseMessageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.txt_seen)
         TextView txtSeen;
         @BindView(R.id.txt_time)
         TextView txtTime;
 
-        OwnedTextMessageViewHolder(View itemView) {
+        BaseMessageViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
@@ -387,77 +550,69 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
 
         @Override
         public void onClick(View view) {
-            OwnerMessageWrapper messageWrapper = getItem(getAdapterPosition(), OwnerMessageWrapper.class);
+            MessageWrapper messageWrapper = getItem(getAdapterPosition(), MessageWrapper.class);
 
-            if (messageWrapper.isSeenExpanded()) {
-                collapseSeenView(false, messageWrapper);
+            if (messageWrapper.isExpanded()) {
+                collapseSeenView(messageWrapper);
+                collapseDateView(messageWrapper);
+                messageWrapper.setExpanded(false);
             } else {
-                expandSeenView(true, messageWrapper);
-            }
-
-            if (messageWrapper.isDateExpanded()) {
-                collapseDateView(false, messageWrapper);
-            } else {
-                expandDateView(true, messageWrapper);
+                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
+                expandSeenView(messageWrapper);
+                expandDateView(messageWrapper);
+                messageWrapper.setExpanded(true);
             }
         }
 
-        void expandSeenView(boolean animate, OwnerMessageWrapper messageWrapper) {
+        void expandSeenView(MessageWrapper messageWrapper) {
             BaseMessage baseMessage = messageWrapper.getMessage();
             if (baseMessage.getCreatedDate() == null) {
                 return;
-            }
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
             }
             txtSeen.setText(generateSeenState(baseMessage.getSeenBy()));
             txtSeen.setVisibility(View.VISIBLE);
             messageWrapper.setSeenExpanded(true);
         }
 
-        void collapseSeenView(boolean animate, OwnerMessageWrapper messageWrapper) {
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-            }
+        void collapseSeenView(MessageWrapper messageWrapper) {
             txtSeen.setVisibility(View.GONE);
             messageWrapper.setSeenExpanded(false);
         }
 
-        void expandDateView(boolean animate, OwnerMessageWrapper messageWrapper) {
+        void expandDateView(MessageWrapper messageWrapper) {
             Date createdDate = messageWrapper.getMessage().getCreatedDate();
             if (createdDate == null) {
                 return;
-            }
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
             }
             txtTime.setText(DateTimeUtils.getDateTimeString(createdDate));
             txtTime.setVisibility(View.VISIBLE);
             messageWrapper.setDateExpanded(true);
         }
 
-        void collapseDateView(boolean animate, OwnerMessageWrapper messageWrapper) {
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-            }
+        void collapseDateView(MessageWrapper messageWrapper) {
             txtTime.setVisibility(View.GONE);
             messageWrapper.setDateExpanded(false);
         }
     }
 
-    class OwnerImageMessageViewHolder extends RecyclerView.ViewHolder {
+
+    class OwnedTextMessageViewHolder extends BaseMessageViewHolder {
+        @BindView(R.id.txt_message)
+        TextView txtMessage;
+
+        OwnedTextMessageViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    class OwnedImageMessageViewHolder extends BaseMessageViewHolder {
         @BindView(R.id.rc_images)
         RecyclerView rcImages;
-        @BindView(R.id.txt_seen)
-        TextView txtSeen;
-        @BindView(R.id.txt_time)
-        TextView txtTime;
 
         SingleUploadImageItemAdapter imageItemAdapter;
 
-        OwnerImageMessageViewHolder(View itemView, RecyclerView.RecycledViewPool viewPool) {
+        OwnedImageMessageViewHolder(View itemView, RecyclerView.RecycledViewPool viewPool, boolean isRTL) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
             Context context = getContext();
             GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 3,
                     GridLayoutManager.VERTICAL, true) {
@@ -468,7 +623,7 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
 
                 @Override
                 protected boolean isLayoutRTL() {
-                    return true;
+                    return isRTL;
                 }
             };
             imageItemAdapter = new SingleUploadImageItemAdapter(context);
@@ -488,103 +643,76 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
             rcImages.setLayoutManager(gridLayoutManager);
             rcImages.setAdapter(imageItemAdapter);
         }
+    }
 
-        void expandSeenView(boolean animate, OwnerMessageWrapper messageWrapper) {
-            BaseMessage baseMessage = messageWrapper.getMessage();
-            if (baseMessage.getCreatedDate() == null) {
-                return;
-            }
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-            }
-            txtSeen.setText(generateSeenState(baseMessage.getSeenBy()));
-            txtSeen.setVisibility(View.VISIBLE);
-            messageWrapper.setSeenExpanded(true);
-        }
+    class OwnedEmojiMessageViewHolder extends BaseMessageViewHolder {
+        @BindView(R.id.img_emoji)
+        ImageView imgEmoji;
 
-        void collapseSeenView(boolean animate, OwnerMessageWrapper messageWrapper) {
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-            }
-            txtSeen.setVisibility(View.GONE);
-            messageWrapper.setSeenExpanded(false);
-        }
-
-        void expandDateView(boolean animate, OwnerMessageWrapper messageWrapper) {
-            Date createdDate = messageWrapper.getMessage().getCreatedDate();
-            if (createdDate == null) {
-                return;
-            }
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-            }
-            txtTime.setText(DateTimeUtils.getDateTimeString(createdDate));
-            txtTime.setVisibility(View.VISIBLE);
-            messageWrapper.setDateExpanded(true);
-        }
-
-        void collapseDateView(boolean animate, OwnerMessageWrapper messageWrapper) {
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-            }
-            txtTime.setVisibility(View.GONE);
-            messageWrapper.setDateExpanded(false);
+        OwnedEmojiMessageViewHolder(View itemView) {
+            super(itemView);
         }
     }
 
-    class FriendTextMessageViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @BindView(R.id.img_avatar)
-        ImageView imgAvatar;
-        @BindView(R.id.txt_message)
-        TextView txtMessage;
-        @BindView(R.id.txt_time)
-        TextView txtTime;
-        @BindView(R.id.txt_seen)
-        TextView txtSeen;
+    class OwnedLocationMessageViewHolder extends BaseMessageViewHolder implements OnMapReadyCallback {
+        @BindView(R.id.map_view)
+        MapView mapView;
+        GoogleMap googleMap;
 
-        FriendTextMessageViewHolder(View itemView) {
+        OwnedLocationMessageViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(this);
+            mapView.onCreate(null);
+            mapView.getMapAsync(this);
         }
 
         @Override
-        public void onClick(View view) {
-            FriendMessageWrapper messageWrapper = getItem(getAdapterPosition(), FriendMessageWrapper.class);
-            if (messageWrapper.isExpanded()) {
-                collapseView(false, messageWrapper);
-            } else {
-                expandView(true, messageWrapper);
-            }
-        }
-
-        void expandView(boolean animate, FriendMessageWrapper messageWrapper) {
-            BaseMessage baseMessage = messageWrapper.getMessage();
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-            }
-            txtTime.setText(DateTimeUtils.getDateTimeString(baseMessage.getCreatedDate()));
-            txtTime.setVisibility(View.VISIBLE);
-            txtSeen.setText(generateSeenState(baseMessage.getSeenBy()));
-            txtSeen.setVisibility(View.VISIBLE);
-            messageWrapper.setExpanded(true);
-        }
-
-        void collapseView(boolean animate, FriendMessageWrapper messageWrapper) {
-            if (animate) {
-                TransitionManager.beginDelayedTransition((ViewGroup) itemView);
-            }
-            txtTime.setVisibility(View.GONE);
-            txtSeen.setVisibility(View.GONE);
-            messageWrapper.setExpanded(false);
+        public void onMapReady(GoogleMap googleMap) {
+            MapsInitializer.initialize(getContext());
+            this.googleMap = googleMap;
         }
     }
 
-    class FriendTypingViewHolder extends RecyclerView.ViewHolder {
+    class OppositeTextMessageViewHolder extends OwnedTextMessageViewHolder {
         @BindView(R.id.img_avatar)
-        ImageView imgAvatar;
+        CircleImageView imgAvatar;
 
-        public FriendTypingViewHolder(View itemView) {
+        OppositeTextMessageViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    class OppositeImageMessageViewHolder extends OwnedImageMessageViewHolder {
+        @BindView(R.id.img_avatar)
+        CircleImageView imgAvatar;
+
+        OppositeImageMessageViewHolder(View itemView, RecyclerView.RecycledViewPool viewPool) {
+            super(itemView, viewPool, false);
+        }
+    }
+
+    class OppositeEmojiMessageViewHolder extends OwnedEmojiMessageViewHolder {
+        @BindView(R.id.img_avatar)
+        CircleImageView imgAvatar;
+
+        OppositeEmojiMessageViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    class OppositeLocationMessageViewHolder extends OwnedLocationMessageViewHolder {
+        @BindView(R.id.img_avatar)
+        CircleImageView imgAvatar;
+
+        OppositeLocationMessageViewHolder(View itemView) {
+            super(itemView);
+        }
+    }
+
+    class OppositeTypingViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.img_avatar)
+        CircleImageView imgAvatar;
+
+        OppositeTypingViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

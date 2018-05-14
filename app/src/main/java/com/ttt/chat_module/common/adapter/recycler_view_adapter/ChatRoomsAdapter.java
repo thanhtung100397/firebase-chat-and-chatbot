@@ -58,8 +58,8 @@ public class ChatRoomsAdapter extends EndlessLoadingRecyclerViewAdapter {
     public void updateOnlineState(String userID, boolean isOnline) {
         UserOnlineStateAndChatRooms userOnlineStateAndChatRooms = userOnlineStateAndRoomsMap.get(userID);
         if (userOnlineStateAndChatRooms == null) {
-            userOnlineStateAndChatRooms = userOnlineStateAndRoomsMap
-                    .put(userID, new UserOnlineStateAndChatRooms(userID));
+            userOnlineStateAndChatRooms = new UserOnlineStateAndChatRooms(userID);
+            userOnlineStateAndRoomsMap.put(userID, new UserOnlineStateAndChatRooms(userID));
         }
         userOnlineStateAndChatRooms.setOnline(isOnline);
     }

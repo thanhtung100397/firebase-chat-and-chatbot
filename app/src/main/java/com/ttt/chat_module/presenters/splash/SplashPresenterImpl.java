@@ -1,9 +1,9 @@
 package com.ttt.chat_module.presenters.splash;
 
-import android.util.Log;
+import android.content.Context;
 
 import com.ttt.chat_module.common.utils.UserAuth;
-import com.ttt.chat_module.presenters.OnRequestCompleteListener;
+import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.views.splash.SplashView;
 
 /**
@@ -11,10 +11,12 @@ import com.ttt.chat_module.views.splash.SplashView;
  */
 
 public class SplashPresenterImpl implements SplashPresenter {
+    private Context context;
     private SplashView splashView;
     private SplashInteractor splashInteractor;
 
-    public SplashPresenterImpl(SplashView splashView) {
+    public SplashPresenterImpl(Context context, SplashView splashView) {
+        this.context = context;
         this.splashView = splashView;
         this.splashInteractor = new SplashInteractorImpl();
     }
@@ -25,17 +27,18 @@ public class SplashPresenterImpl implements SplashPresenter {
 
     @Override
     public void goToOnlineState() {
-        splashInteractor.updateUserOnlineState(UserAuth.getUserID(), true, new OnRequestCompleteListener() {
-            @Override
-            public void onRequestSuccess() {
-                splashView.completeLoading();
-            }
+        splashInteractor.updateUserOnlineStateAndFetchUser(UserAuth.getUserID(), true,
+                new OnGetUserCompleteListener() {
+                    @Override
+                    public void onGetUserSuccess(User user) {
+                        UserAuth.saveUser(context, user);
+                        splashView.completeLoading();
+                    }
 
-            @Override
-            public void onRequestError(String message) {
-                Log.i("ABC", "onRequestError: "+message);
-                splashView.showErrorDialog();
-            }
-        });
+                    @Override
+                    public void onRequestError(String message) {
+                        splashView.showErrorDialog();
+                    }
+                });
     }
 }

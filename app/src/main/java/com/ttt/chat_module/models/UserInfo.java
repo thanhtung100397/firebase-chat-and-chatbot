@@ -5,7 +5,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.firestore.Exclude;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.Serializable;
 
@@ -26,7 +25,6 @@ public class UserInfo implements Parcelable, Serializable{
     private String lastName;
     private String avatarUrl;
     private boolean isOnline;
-    private String fcmToken;
 
     public UserInfo(User user) {
         setId(user.getId());
@@ -35,7 +33,14 @@ public class UserInfo implements Parcelable, Serializable{
         setLastName(user.getLastName());
         setAvatarUrl(user.getAvatarUrl());
         setIsOnline(user.getIsOnline());
-        setFcmToken(user.getFcmToken());
+    }
+
+    public UserInfo(UserProfile userProfile) {
+        setId(userProfile.getId());
+        setEmail(userProfile.getEmail());
+        setFirstName(userProfile.getFirstName());
+        setLastName(userProfile.getLastName());
+        setAvatarUrl(userProfile.getAvatarUrl());
     }
 
     public UserInfo(SharedPreferences sharedPreferences) {
@@ -44,7 +49,6 @@ public class UserInfo implements Parcelable, Serializable{
         setFirstName(sharedPreferences.getString(FIRST_NAME, null));
         setLastName(sharedPreferences.getString(LAST_NAME, null));
         setAvatarUrl(sharedPreferences.getString(AVATAR_URL, null));
-        setFcmToken(FirebaseInstanceId.getInstance().getToken());
     }
 
     public UserInfo() {
@@ -57,7 +61,6 @@ public class UserInfo implements Parcelable, Serializable{
         setLastName(userInfo.getLastName());
         setAvatarUrl(userInfo.getAvatarUrl());
         setIsOnline(userInfo.getIsOnline());
-        setFcmToken(userInfo.getFcmToken());
     }
 
     public void setId(String id) {
@@ -109,14 +112,6 @@ public class UserInfo implements Parcelable, Serializable{
         this.isOnline = isOnline;
     }
 
-    public String getFcmToken() {
-        return fcmToken;
-    }
-
-    public void setFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
-    }
-
     protected UserInfo(Parcel in) {
         id = in.readString();
         email = in.readString();
@@ -124,7 +119,6 @@ public class UserInfo implements Parcelable, Serializable{
         lastName = in.readString();
         avatarUrl = in.readString();
         isOnline = in.readByte() != 0;
-        fcmToken = in.readString();
     }
 
     @Override
@@ -135,7 +129,6 @@ public class UserInfo implements Parcelable, Serializable{
         dest.writeString(lastName);
         dest.writeString(avatarUrl);
         dest.writeByte((byte) (isOnline ? 1 : 0));
-        dest.writeString(fcmToken);
     }
 
     @Override

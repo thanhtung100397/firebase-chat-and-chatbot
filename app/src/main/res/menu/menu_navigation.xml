@@ -22,7 +22,14 @@
 
     </group>
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_chat_bot"
+            android:icon="@drawable/ic_bot"
+            android:title="@string/title_chat_bot" />
+    </group>
+
+    <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout"

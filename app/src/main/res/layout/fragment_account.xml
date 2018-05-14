@@ -5,31 +5,71 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:focusable="true"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    app:layout_scrollFlags="scroll|enterAlwaysCollapsed">
 
-    <ImageView
-        android:id="@+id/img_cover"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_scrolling"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/wall_placeholder" />
+        android:layout_height="256dp"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/img_avatar"
-        android:layout_width="@dimen/large_avatar_size"
-        android:layout_height="@dimen/large_avatar_size"
-        android:src="@drawable/avatar_placeholder"
-        app:civ_border_color="@android:color/white"
-        app:civ_border_width="3dp"
-        app:layout_anchor="@id/img_cover"
-        app:layout_anchorGravity="bottom|center_horizontal" />
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="@color/colorPrimary"
+            app:titleEnabled="false"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-    <TextView
-        android:id="@+id/txt_name"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/img_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/wall_placeholder"
+                    android:tint="#32000000"/>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/img_avatar"
+                    android:layout_width="@dimen/large_avatar_size"
+                    android:layout_height="@dimen/large_avatar_size"
+                    android:src="@drawable/avatar_placeholder"
+                    app:civ_border_color="@android:color/white"
+                    app:civ_border_width="3dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="50dp"/>
+
+                <TextView
+                    android:id="@+id/txt_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Full Name"
+                    android:textSize="@dimen/font_size_30dp"
+                    android:layout_below="@id/img_avatar"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="@dimen/edit_text_padding"/>
+
+            </RelativeLayout>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Full name"
-        android:textSize="@dimen/font_size_30dp"/>
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_edit"
+        app:layout_anchor="@id/app_bar_scrolling"
+        app:layout_anchorGravity="bottom|right"
+        app:fabSize="normal"/>
 
+    <include layout="@layout/content_profile" />
 
 </android.support.design.widget.CoordinatorLayout>

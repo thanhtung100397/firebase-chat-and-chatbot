@@ -1,177 +1,218 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tool_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:titleMargin="0dp"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/img_friend_avatar"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/avatar_placeholder"
-                    android:layout_marginRight="@dimen/edit_text_padding"/>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/txt_friend_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Friend Name"
-                        android:textColor="@android:color/white"
-                        android:textSize="@dimen/font_size_20dp"/>
-
-                    <ImageView
-                        android:id="@+id/img_friend_online_state"
-                        android:layout_width="@dimen/edit_text_padding"
-                        android:layout_height="@dimen/edit_text_padding"
-                        android:src="@drawable/dot_drawable"
-                        android:layout_below="@id/txt_friend_name"
-                        android:layout_marginRight="@dimen/small_padding"
-                        android:layout_marginEnd="@dimen/small_padding"
-                        android:layout_marginTop="2dp"/>
-
-                    <TextView
-                        android:id="@+id/txt_friend_online_state"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/light_gray"
-                        android:textSize="@dimen/font_size_10dp"
-                        android:text="@string/fetching"
-                        android:layout_below="@id/txt_friend_name"
-                        android:layout_toRightOf="@id/img_friend_online_state"
-                        android:layout_toEndOf="@id/img_friend_online_state"/>
-                </RelativeLayout>
-            </LinearLayout>
-        </android.support.v7.widget.Toolbar>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rc_messages"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/app_bar"
-        android:layout_above="@id/ln_input"
-        android:background="@color/light_gray"/>
-
-    <ProgressBar
-        android:id="@+id/progress_first_loading_messages"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:indeterminateTint="@color/colorPrimary"
-        android:visibility="gone"/>
-
-    <LinearLayout
-        android:id="@+id/ln_retry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/error_occurred"
-            android:textSize="@dimen/font_size_20dp"/>
-
-        <Button
-            android:id="@+id/btn_retry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/retry"
-            android:background="?attr/selectableItemBackground"
-            android:textColor="@android:color/tab_indicator_text"
-            android:drawableLeft="@mipmap/ic_retry"
-            android:drawableStart="@mipmap/ic_retry"/>
-    </LinearLayout>
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/ln_input"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="4dp"
-        android:translationZ="4dp"
-        android:paddingTop="@dimen/small_padding"
-        android:paddingBottom="@dimen/small_padding"
-        android:paddingLeft="@dimen/edit_text_padding"
-        android:paddingRight="@dimen/edit_text_padding"
-        android:layout_alignParentBottom="true">
+        android:layout_height="match_parent"
+        android:layout_above="@id/ln_emoji">
 
-        <ImageButton
-            android:id="@+id/btn_camera"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tool_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:titleMargin="0dp"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/img_friend_avatar"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/avatar_placeholder"
+                        android:layout_marginRight="@dimen/edit_text_padding"/>
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/txt_friend_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Friend Name"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/font_size_20dp"/>
+
+                        <ImageView
+                            android:id="@+id/img_friend_online_state"
+                            android:layout_width="@dimen/edit_text_padding"
+                            android:layout_height="@dimen/edit_text_padding"
+                            android:src="@drawable/dot_drawable"
+                            android:layout_below="@id/txt_friend_name"
+                            android:layout_marginRight="@dimen/small_padding"
+                            android:layout_marginEnd="@dimen/small_padding"
+                            android:layout_marginTop="2dp"/>
+
+                        <TextView
+                            android:id="@+id/txt_friend_online_state"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/light_gray"
+                            android:textSize="@dimen/font_size_10dp"
+                            android:text="@string/fetching"
+                            android:layout_below="@id/txt_friend_name"
+                            android:layout_toRightOf="@id/img_friend_online_state"
+                            android:layout_toEndOf="@id/img_friend_online_state"/>
+                    </RelativeLayout>
+                </LinearLayout>
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rc_messages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/app_bar"
+            android:background="@color/light_gray"
+            android:layout_above="@id/rl_input"/>
+
+        <ProgressBar
+            android:id="@+id/progress_first_loading_messages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/image_description"
-            android:src="@drawable/ic_camera"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/edit_text_padding"
-            android:layout_marginRight="@dimen/edit_text_padding"/>
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@color/colorPrimary"
+            android:visibility="gone"/>
 
-        <ImageButton
-            android:id="@+id/btn_emoji"
+        <LinearLayout
+            android:id="@+id/ln_retry"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/image_description"
-            android:src="@drawable/ic_emoji"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/btn_camera"
-            android:layout_toRightOf="@id/btn_camera"
-            android:layout_marginRight="@dimen/edit_text_padding"
-            android:layout_marginEnd="@dimen/edit_text_padding"/>
+            android:orientation="vertical"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:visibility="gone">
 
-        <com.ttt.chat_module.common.custom_view.ClearableEditText
-            android:id="@+id/edt_message"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/error_occurred"
+                android:textSize="@dimen/font_size_20dp"/>
+
+            <Button
+                android:id="@+id/btn_retry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/retry"
+                android:background="?attr/selectableItemBackground"
+                android:textColor="@android:color/tab_indicator_text"
+                android:drawableLeft="@mipmap/ic_retry"
+                android:drawableStart="@mipmap/ic_retry"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/font_size_16dp"
-            android:hint="@string/type_your_message"
-            android:layout_toLeftOf="@id/btn_send"
-            android:layout_toStartOf="@id/btn_send"
-            android:layout_toRightOf="@id/btn_emoji"
-            android:layout_toEndOf="@id/btn_emoji"
-            android:layout_marginRight="@dimen/edit_text_padding"
-            android:layout_marginEnd="@dimen/edit_text_padding"
-            app:edtBackground="@drawable/message_edit_text_background"
-            app:clearButtonDrawable="@drawable/ic_close_round"/>
+            android:elevation="4dp"
+            android:translationZ="4dp"
+            android:paddingTop="@dimen/small_padding"
+            android:paddingBottom="@dimen/small_padding"
+            android:paddingLeft="@dimen/edit_text_padding"
+            android:paddingRight="@dimen/edit_text_padding"
+            android:layout_alignParentBottom="true">
 
-        <ImageButton
-            android:id="@+id/btn_send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/image_description"
-            android:src="@drawable/ic_send"
-            android:scaleX="1.1"
-            android:scaleY="1.1"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"/>
+            <ImageButton
+                android:id="@+id/btn_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/image_description"
+                android:src="@drawable/ic_camera"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/edit_text_padding"
+                android:layout_marginRight="@dimen/edit_text_padding"/>
+
+            <ImageButton
+                android:id="@+id/btn_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_location"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/edit_text_padding"
+                android:layout_marginRight="@dimen/edit_text_padding"
+                android:layout_toEndOf="@id/btn_camera"
+                android:layout_toRightOf="@id/btn_camera"/>
+
+            <ImageButton
+                android:id="@+id/btn_emoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/image_description"
+                android:src="@drawable/ic_emoji"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/btn_location"
+                android:layout_toRightOf="@id/btn_location"
+                android:layout_marginRight="@dimen/edit_text_padding"
+                android:layout_marginEnd="@dimen/edit_text_padding"/>
+
+            <com.ttt.chat_module.common.custom_view.ClearableEditText
+                android:id="@+id/edt_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/font_size_16dp"
+                android:hint="@string/type_your_message"
+                android:layout_toLeftOf="@id/btn_send"
+                android:layout_toStartOf="@id/btn_send"
+                android:layout_toRightOf="@id/btn_emoji"
+                android:layout_toEndOf="@id/btn_emoji"
+                android:layout_marginRight="@dimen/edit_text_padding"
+                android:layout_marginEnd="@dimen/edit_text_padding"
+                app:edtBackground="@drawable/message_edit_text_background"
+                app:clearButtonDrawable="@drawable/ic_close_round"/>
+
+            <ImageButton
+                android:id="@+id/btn_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_send"
+                android:scaleX="1.1"
+                android:scaleY="1.1"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"/>
+        </RelativeLayout>
+
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ln_emoji"
+        android:layout_width="match_parent"
+        android:layout_height="256dp"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_emoji"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabGravity="center"
+            app:tabMode="scrollable"
+            app:tabIndicatorColor="@color/colorPrimary"
+            app:tabIndicatorHeight="4dp"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/emoji_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
 </RelativeLayout>

@@ -15,7 +15,7 @@
         android:layout_marginLeft="@dimen/small_padding"
         android:text="dd/MM/yyyy hh:mm"
         android:textSize="@dimen/font_size_10dp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rc_images"
@@ -36,6 +36,6 @@
         android:layout_alignParentRight="true"
         android:text="@string/seen"
         android:textSize="@dimen/font_size_10dp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 </RelativeLayout>
 

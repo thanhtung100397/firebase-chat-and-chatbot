@@ -12,6 +12,8 @@ public abstract class BaseMessage {
 
     public static final String TEXT_MESSAGE = "text";
     public static final String IMAGE_MESSAGE = "image";
+    public static final String EMOJI_MESSAGE = "emoji";
+    public static final String LOCATION_MESSAGE = "location";
 
     private String type;
     private String ownerID;

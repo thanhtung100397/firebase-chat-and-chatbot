@@ -6,6 +6,8 @@ import android.os.Parcelable;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.Date;
+
 /**
  * Created by TranThanhTung on 20/02/2018.
  */
@@ -13,21 +15,25 @@ import com.google.firebase.iid.FirebaseInstanceId;
 public class User implements Parcelable {
     public static final String ID = "id";
     public static final String EMAIL = "email";
+    public static final String PHONE = "phone";
+    public static final String DATE_OF_BIRTH = "dateOfBirth";
     public static final String FIRST_NAME = "firstName";
     public static final String LAST_NAME = "lastName";
     public static final String AVATAR_URL = "avatarUrl";
     public static final String COVER_URL = "coverUrl";
 
     public static final String IS_ONLINE = "isOnline";
-    public static final String FCM_TOKEN = "fcmToken";
+
+    public static final String PATHS = "paths";
 
     private String id;
     private String email;
+    private String phone;
+    private Date dateOfBirth;
     private String firstName;
     private String lastName;
     private String avatarUrl;
     private String coverUrl;
-    private String fcmToken;
     private boolean isOnline = false;
 
     public User(String id, String email, String firstName, String lastName) {
@@ -35,17 +41,20 @@ public class User implements Parcelable {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.fcmToken = FirebaseInstanceId.getInstance().getToken();
     }
 
     public User(SharedPreferences sharedPreferences) {
         setId(sharedPreferences.getString(ID, null));
         setEmail(sharedPreferences.getString(EMAIL, null));
+        setPhone(sharedPreferences.getString(PHONE, null));
+        long dateOfBirthLong = sharedPreferences.getLong(DATE_OF_BIRTH,  -1);
+        if(dateOfBirthLong != -1) {
+            setDateOfBirth(new Date(dateOfBirthLong));
+        }
         setFirstName(sharedPreferences.getString(FIRST_NAME, null));
         setLastName(sharedPreferences.getString(LAST_NAME, null));
         setAvatarUrl(sharedPreferences.getString(AVATAR_URL, null));
         setCoverUrl(sharedPreferences.getString(COVER_URL, null));
-        setFcmToken(FirebaseInstanceId.getInstance().getToken());
     }
 
     public User() {
@@ -58,7 +67,11 @@ public class User implements Parcelable {
         editor.putString(LAST_NAME, getLastName());
         editor.putString(AVATAR_URL, getAvatarUrl());
         editor.putString(COVER_URL, getCoverUrl());
-        editor.putString(FCM_TOKEN, getFcmToken());
+        editor.putString(PHONE, getPhone());
+        Date dateOfBirth = getDateOfBirth();
+        if(dateOfBirth != null) {
+            editor.putLong(DATE_OF_BIRTH, dateOfBirth.getTime());
+        }
     }
 
     public String getId() {
@@ -93,6 +106,22 @@ public class User implements Parcelable {
         this.email = email;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -117,13 +146,6 @@ public class User implements Parcelable {
         this.isOnline = isOnline;
     }
 
-    public String getFcmToken() {
-        return fcmToken;
-    }
-
-    public void setFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -146,7 +168,6 @@ public class User implements Parcelable {
         avatarUrl = in.readString();
         coverUrl = in.readString();
         isOnline = in.readByte() != 0;
-        fcmToken = in.readString();
     }
 
     @Override
@@ -158,7 +179,6 @@ public class User implements Parcelable {
         dest.writeString(avatarUrl);
         dest.writeString(coverUrl);
         dest.writeByte((byte) (isOnline ? 1 : 0));
-        dest.writeString(fcmToken);
     }
 
     @Override

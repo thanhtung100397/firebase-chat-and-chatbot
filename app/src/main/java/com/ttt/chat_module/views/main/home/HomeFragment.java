@@ -8,6 +8,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.ttt.chat_module.R;
 import com.ttt.chat_module.bus_event.ChatRoomLastMessageChangeEvent;
@@ -44,6 +45,8 @@ public class HomeFragment extends BaseFragment<HomePresenter> implements HomeVie
     RecyclerView rcMessages;
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.ln_no_conversation)
+    LinearLayout lnNoConversation;
 
     private ChatRoomsAdapter chatRoomsAdapter;
 
@@ -61,7 +64,9 @@ public class HomeFragment extends BaseFragment<HomePresenter> implements HomeVie
     protected void initData(Bundle saveInstanceState) {
         Context context = getActivity();
 
-        chatRoomsAdapter = new ChatRoomsAdapter(context);
+        if(chatRoomsAdapter == null) {
+            chatRoomsAdapter = new ChatRoomsAdapter(context);
+        }
         chatRoomsAdapter.setLoadingMoreListener(this);
         chatRoomsAdapter.addOnItemClickListener(this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
@@ -115,6 +120,11 @@ public class HomeFragment extends BaseFragment<HomePresenter> implements HomeVie
     @Override
     public void refreshChatRooms(Map<String, Integer> roomPositionMap, List<ChatRoom> chatRooms) {
         chatRoomsAdapter.refreshChatRooms(roomPositionMap, chatRooms);
+        if(chatRoomsAdapter.getItemCount() == 0) {
+            lnNoConversation.setVisibility(View.VISIBLE);
+        } else {
+            lnNoConversation.setVisibility(View.GONE);
+        }
     }
 
     @Override

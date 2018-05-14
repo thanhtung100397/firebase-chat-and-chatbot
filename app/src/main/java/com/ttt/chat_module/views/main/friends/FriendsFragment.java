@@ -62,7 +62,9 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryLight, R.color.colorPrimary, R.color.colorPrimaryDark);
 
-        listFriendsAdapter = new ListFriendsAdapter(context);
+        if(listFriendsAdapter == null) {
+            listFriendsAdapter = new ListFriendsAdapter(context);
+        }
         listFriendsAdapter.addOnItemClickListener(this);
         listFriendsAdapter.setLoadingMoreListener(this);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);

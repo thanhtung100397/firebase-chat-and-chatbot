@@ -8,6 +8,7 @@
     <dimen name="tiny_padding">2dp</dimen>
 
     <dimen name="edit_text_padding">10dp</dimen>
+    <dimen name="edit_text_space_bottom">20dp</dimen>
     <dimen name="font_size_20dp">20dp</dimen>
     <dimen name="font_size_22dp">22dp</dimen>
     <dimen name="edit_text_margin_bottom">16dp</dimen>
@@ -26,4 +27,5 @@
     <dimen name="font_size_10dp">10dp</dimen>
     <dimen name="font_size_15dp">15dp</dimen>
     <dimen name="font_size_50dp">50dp</dimen>
+    <dimen name="camera_button_size">36dp</dimen>
 </resources>

@@ -2,7 +2,7 @@ package com.ttt.chat_module.presenters.main.home;
 
 import com.ttt.chat_module.models.ChatRoom;
 import com.ttt.chat_module.models.ChatRoomInfo;
-import com.ttt.chat_module.presenters.chat.BasePaginationListener;
+import com.ttt.chat_module.presenters.BasePaginationListener;
 
 import java.util.List;
 import java.util.Map;

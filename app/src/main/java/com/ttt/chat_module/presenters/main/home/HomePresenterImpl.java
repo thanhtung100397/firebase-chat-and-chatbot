@@ -54,6 +54,8 @@ public class HomePresenterImpl implements HomePresenter {
 
                     @Override
                     public void onRequestError(String message) {
+                        homeView.hideLoadingMoreProgress();
+                        homeView.enableLoadingMore(true);
                         ToastUtils.quickToast(context, R.string.unexpected_error_occurred);
                     }
                 });
@@ -80,6 +82,8 @@ public class HomePresenterImpl implements HomePresenter {
 
                     @Override
                     public void onRequestError(String message) {
+                        homeView.hideLoadingMoreProgress();
+                        homeView.enableRefreshing(true);
                         ToastUtils.quickToast(context, R.string.unexpected_error_occurred);
                     }
                 });

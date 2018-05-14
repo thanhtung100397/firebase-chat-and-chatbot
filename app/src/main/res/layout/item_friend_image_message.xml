@@ -8,8 +8,8 @@
         android:id="@+id/txt_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@id/txt_message"
-        android:layout_alignStart="@id/txt_message"
+        android:layout_alignLeft="@id/rc_images"
+        android:layout_alignStart="@id/rc_images"
         android:layout_marginTop="@dimen/tiny_padding"
         android:layout_marginRight="@dimen/small_padding"
         android:layout_marginLeft="@dimen/small_padding"
@@ -38,7 +38,6 @@
         android:paddingRight="@dimen/edit_text_padding"
         android:paddingTop="@dimen/small_padding"
         android:layout_alignTop="@id/img_avatar"
-        android:background="@drawable/item_message_sent_background"
         android:layout_below="@id/txt_time"/>
 
     <TextView
@@ -48,7 +47,8 @@
         android:layout_below="@id/rc_images"
         android:layout_marginRight="@dimen/small_padding"
         android:layout_marginLeft="@dimen/small_padding"
-        android:layout_alignRight="@id/rc_images"
+        android:layout_alignLeft="@id/rc_images"
+        android:layout_alignStart="@id/rc_images"
         android:text="@string/seen"
         android:textSize="@dimen/font_size_10dp"
         android:visibility="gone" />
