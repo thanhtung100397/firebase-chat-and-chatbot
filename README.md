@@ -2,9 +2,12 @@
 Chat app using firebase platform and chat bot using api.ai platform<br/>
 APK: https://drive.google.com/open?id=1lXufPGha11QDjMz98apUKsiGn3qAcgHg
 
-<img src="https://drive.google.com/uc?id=1UKHEACGCUG_NXNkjrPeoOqfc2JffxG76" width=360 height=640/>
+<div style="float: left; width: 100%">
+  <img src="https://drive.google.com/uc?id=1UKHEACGCUG_NXNkjrPeoOqfc2JffxG76" width=360 height=640/>
+  <img src="https://drive.google.com/uc?id=1Nb9JFvG7z0KLpyjMmnU8fbTFIGiJFKzw" width=360 height=640/>
+  <img src="https://drive.google.com/uc?id=1BhxP_BtqwuDDCvgmgre9Qkh-MKq6V7EG" width=360 height=640/>
+<div/>
 ![alt text](https://drive.google.com/uc?id=1UKHEACGCUG_NXNkjrPeoOqfc2JffxG76)
-![alt text](https://drive.google.com/uc?id=1Nb9JFvG7z0KLpyjMmnU8fbTFIGiJFKzw)
 ![alt text](https://drive.google.com/uc?id=1Nb9JFvG7z0KLpyjMmnU8fbTFIGiJFKzw)
 ![alt text](https://drive.google.com/uc?id=1BhxP_BtqwuDDCvgmgre9Qkh-MKq6V7EG)
 ![alt text](https://drive.google.com/uc?id=1w5jSiPNj7mUVLkPMuR5wlB9kwDlXfnHq)
