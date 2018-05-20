@@ -107,6 +107,11 @@ public class LocationPickerActivity extends BaseActivity<LocationPickerPresenter
         location = (Location) intent.getSerializableExtra(Constants.LOCATION);
         address = intent.getStringExtra(Constants.ADDRESS);
 
+        if(location == null) {
+            location = new Location(Constants.DEFAULT_LAT, Constants.DEFAULT_LON);
+            address = Constants.DEFAULT_ADDRESS;
+        }
+
         initToolBar();
 
         initListFoundAddressResult();
@@ -287,8 +292,8 @@ public class LocationPickerActivity extends BaseActivity<LocationPickerPresenter
         builder.setTitle(R.string.gps_title)
                 .setMessage(R.string.gps_message)
                 .setCancelable(false)
-                .setPositiveButton(R.string.ok, (dialog, id) -> startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_ENABLE_GPS))
-                .setNegativeButton(R.string.cancel, (dialog, id) -> {
+                .setPositiveButton(R.string.yes, (dialog, id) -> startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_ENABLE_GPS))
+                .setNegativeButton(R.string.no, (dialog, id) -> {
                     fabMyLocation.setVisibility(View.GONE);
                     if (location != null) {
                         translateToLocation(location, address);
@@ -330,7 +335,7 @@ public class LocationPickerActivity extends BaseActivity<LocationPickerPresenter
 
         SingleShotLocationProvider.getCurrentLocation(this, location -> {
             if (location == null) {
-                Toast.makeText(this, R.string.auto_locate_failed, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.location_enabling, Toast.LENGTH_SHORT).show();
                 return;
             }
 

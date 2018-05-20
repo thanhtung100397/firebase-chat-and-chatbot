@@ -41,17 +41,24 @@ public class ListFriendsAdapter extends EndlessLoadingRecyclerViewAdapter {
         refresh(usersInfo);
     }
 
-    public void updateOnlineState(String userID, boolean isOnline) {
-        Integer position = userPositionMap.get(userID);
-        if(position == null) {
+    public void updateUserInfo(UserInfo userInfo) {
+        Integer position = userPositionMap.get(userInfo.getId());
+        if (position == null) {
             return;
         }
-        UserInfo userInfo = getItem(position, UserInfo.class);
-        if(userInfo.getIsOnline() == isOnline) {
-            return;
+        UserInfo userInfoFound = getItem(position, UserInfo.class);
+        boolean needRefreshView = needRefreshView(userInfo, userInfoFound);
+        userInfoFound.update(userInfo);
+        if(needRefreshView) {
+            notifyItemChanged(position);
         }
-        userInfo.setIsOnline(isOnline);
-        notifyItemChanged(position);
+    }
+
+    private boolean needRefreshView(UserInfo newUserInfo, UserInfo oldUserInfo) {
+        return (newUserInfo.getIsOnline() != oldUserInfo.getIsOnline()) ||
+                !newUserInfo.getFirstName().equals(oldUserInfo.getFirstName()) ||
+                !newUserInfo.getLastName().equals(oldUserInfo.getLastName()) ||
+                !newUserInfo.getAvatarUrl().equals(oldUserInfo.getAvatarUrl());
     }
 
     @Override

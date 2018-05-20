@@ -13,10 +13,12 @@ public class ChatRoomInfo implements Serializable {
     public static final String USERS_INFO = "usersInfo";
     public static final String VISIT_STATES = "visitStates";
     public static final String TYPING_STATES = "typingStates";
+    public static final String USER_SETTINGS = "userSettings";
     public static final String LAST_MESSAGE = "lastMessage";
     public static final String MESSAGES = "messages";
 
     private String id;
+    private Map<String, Object> lastMessage;
     private Map<String, UserInfo> usersInfo;
 
     public ChatRoomInfo() {
@@ -44,5 +46,13 @@ public class ChatRoomInfo implements Serializable {
 
     public void setUsersInfo(Map<String, UserInfo> usersInfo) {
         this.usersInfo = usersInfo;
+    }
+
+    public Map<String, Object> getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(Map<String, Object> lastMessage) {
+        this.lastMessage = lastMessage;
     }
 }

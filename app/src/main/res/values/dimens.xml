@@ -17,7 +17,7 @@
     <dimen name="small_avatar_size">56dp</dimen>
     <dimen name="tiny_avatar_size">32dp</dimen>
     <dimen name="dot_size">17dp</dimen>
-    <dimen name="edit_text_max_width">180dp</dimen>
+    <dimen name="edit_text_max_width">256dp</dimen>
     <dimen name="font_size_14dp">14dp</dimen>
     <dimen name="font_size_12dp">12dp</dimen>
     <dimen name="font_size_16dp">16dp</dimen>

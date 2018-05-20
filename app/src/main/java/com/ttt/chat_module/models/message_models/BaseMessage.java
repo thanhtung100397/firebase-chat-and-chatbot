@@ -9,6 +9,7 @@ public abstract class BaseMessage {
     public static final String TYPE = "type";
     public static final String OWNER_ID = "ownerID";
     public static final String CREATED_DATE = "createdDate";
+    public static final String SEEN_BY = "seenBy";
 
     public static final String TEXT_MESSAGE = "text";
     public static final String IMAGE_MESSAGE = "image";

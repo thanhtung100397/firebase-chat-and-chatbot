@@ -53,7 +53,7 @@
         android:layout_marginLeft="@dimen/small_padding"
         android:layout_alignStart="@id/txt_message"
         android:layout_alignLeft="@id/txt_message"
-        android:text="@string/seen"
+        android:text="@string/seenBy"
         android:textSize="@dimen/font_size_10dp"
         android:visibility="gone" />
 </RelativeLayout>

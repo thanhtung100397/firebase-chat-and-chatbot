@@ -8,8 +8,8 @@ public class NewTextMessageNotification extends NewMessageNotification {
 
     private String message;
 
-    public NewTextMessageNotification(String roomID, UserInfo ownerInfo, TextMessage message) {
-        super(roomID, ownerInfo, message);
+    public NewTextMessageNotification(String roomID, String toUserID, UserInfo ownerInfo, TextMessage message) {
+        super(roomID, toUserID, ownerInfo, message);
         this.message = message.getMessage();
     }
 

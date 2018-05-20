@@ -14,7 +14,8 @@ public class ChatRoom {
     private String roomID;
     private Map<String, UserInfo> friendsInfo;
     private String lastMessage;
-    private int onlineFriendNumber = 0;
+    private boolean isOwnedMessage;
+    private boolean isSeen;
 
     public ChatRoom(Context context, ChatRoomInfo chatRoomInfo, Map<String, Object> lastMessageMap) {
         update(context, chatRoomInfo, lastMessageMap);
@@ -26,17 +27,12 @@ public class ChatRoom {
         setLastMessage(context, lastMessageMap);
     }
 
-    public void updateOnlineState(String userID, boolean isOnline) {
-        UserInfo userInfo = friendsInfo.get(userID);
-        if(userInfo == null) {
-            return;
-        }
-        onlineFriendNumber += - (userInfo.getIsOnline()? 1 : 0) + (isOnline? 1 : 0);
-        userInfo.setIsOnline(isOnline);
-    }
-
     public void setLastMessage(Context context, Map<String, Object> lastMessageMap) {
+        String userID = UserAuth.getUserID();
         String ownerID = (String) lastMessageMap.get(BaseMessage.OWNER_ID);
+        this.isOwnedMessage = ownerID.equals(userID);
+        Map<String, Boolean> seenBy = (Map<String, Boolean>) lastMessageMap.get(BaseMessage.SEEN_BY);
+        this.isSeen = (seenBy != null) && seenBy.containsKey(userID);
         String messageType = (String) lastMessageMap.get(BaseMessage.TYPE);
         String currentUserID = UserAuth.getUserID();
         switch (messageType) {
@@ -117,11 +113,6 @@ public class ChatRoom {
     public void setFriendsInfo(Map<String, UserInfo> userInfoMap) {
         userInfoMap.remove(UserAuth.getUserID());
         this.friendsInfo = userInfoMap;
-        for (Map.Entry<String, UserInfo> userInfoEntry : friendsInfo.entrySet()){
-            if(userInfoEntry.getValue().getIsOnline()){
-                this.onlineFriendNumber += 1;
-            }
-        }
     }
 
     public String getLastMessage() {
@@ -132,7 +123,28 @@ public class ChatRoom {
         this.lastMessage = lastMessage;
     }
 
+    public boolean isOwnedMessage() {
+        return isOwnedMessage;
+    }
+
+    public void setOwnedMessage(boolean ownedMessage) {
+        isOwnedMessage = ownedMessage;
+    }
+
+    public boolean isSeen() {
+        return isSeen;
+    }
+
+    public void setSeen(boolean seen) {
+        isSeen = seen;
+    }
+
     public boolean isOnline() {
-        return onlineFriendNumber > 0;
+        for (Map.Entry<String, UserInfo> friendInfoEntry : friendsInfo.entrySet()) {
+            if(friendInfoEntry.getValue().getIsOnline()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

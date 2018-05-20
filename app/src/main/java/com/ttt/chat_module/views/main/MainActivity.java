@@ -20,9 +20,9 @@ import com.ttt.chat_module.common.adapter.view_pager_adapter.HomeFragmentPagerAd
 import com.ttt.chat_module.common.custom_view.LoadingDialog;
 import com.ttt.chat_module.common.utils.ToastUtils;
 import com.ttt.chat_module.common.utils.UserAuth;
+import com.ttt.chat_module.presenters.BasePresenter;
 import com.ttt.chat_module.presenters.OnRequestCompleteListener;
-import com.ttt.chat_module.presenters.main.MainActivityPresenter;
-import com.ttt.chat_module.presenters.main.MainActivityPresenterImpl;
+import com.ttt.chat_module.services.UserChangeListenerService;
 import com.ttt.chat_module.views.auth.login.LoginActivity;
 import com.ttt.chat_module.views.base.activity.BaseActivity;
 import com.ttt.chat_module.views.chat_bot.ChatBotActivity;
@@ -30,7 +30,7 @@ import com.ttt.chat_module.views.chat_bot.ChatBotActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity<MainActivityPresenter> implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.bottom_navigation)
@@ -60,22 +60,19 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
         }
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
 
         navigationView.setNavigationItemSelectedListener(navigationItemSelectedListener);
 
         loadingDialog = new LoadingDialog(this);
 
-        MainActivityPresenter presenter = getPresenter();
-        presenter.registerUsersOnlineStateChangeListener();
-        presenter.registerChatRoomLastMessageChangeListener();
+        startService(new Intent(this, UserChangeListenerService.class));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MainActivityPresenter presenter = getPresenter();
-        presenter.unregisterUsersOnlineStateChangeListener();
-        presenter.unregisterChatRoomLastMessageChangeListener();
+        stopService(new Intent(this, UserChangeListenerService.class));
     }
 
     @Override
@@ -181,8 +178,8 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
     }
 
     @Override
-    protected MainActivityPresenter initPresenter() {
-        return new MainActivityPresenterImpl();
+    protected BasePresenter initPresenter() {
+        return null;
     }
 
     @Override

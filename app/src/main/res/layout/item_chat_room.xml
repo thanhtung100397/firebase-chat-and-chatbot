@@ -21,7 +21,7 @@
         android:layout_width="@dimen/dot_size"
         android:layout_height="@dimen/dot_size"
         app:civ_border_color="@android:color/white"
-        app:civ_border_width="3dp"
+        app:civ_border_width="2dp"
         android:src="@color/dot_online_color"
         android:layout_alignBottom="@id/img_avatar"
         android:layout_alignRight="@id/img_avatar"

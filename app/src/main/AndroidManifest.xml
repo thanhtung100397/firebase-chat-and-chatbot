@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.FLASHLIGHT"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <!--
@@ -71,7 +72,7 @@
         <service android:name=".services.LeftChatRoomService" />
         <service android:name=".services.SendNotificationService" />
         <service
-            android:name=".services.firebase.FireBaseMessaging"
+            android:name=".services.firebase.AppFirebaseMessagingService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -83,6 +84,13 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
+        <service android:name=".services.SeenMessagesService"/>
+
+        <service android:name=".services.UserChangeListenerService" />
+
+        <receiver android:name=".broadcast.NotificationBroadCast"/>
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

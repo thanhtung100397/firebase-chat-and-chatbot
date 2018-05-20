@@ -150,8 +150,9 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
         this.onTextClearedListener = onTextClearedListener;
     }
 
-    public void setOnEditTextClickListener(OnClickListener listener) {
-        editText.setOnClickListener(listener);
+    public void setOnEditTextClickListener(OnEditTextClickListener listener) {
+        editText.setOnClickListener(listener::onEditTextClick);
+        editText.setOnFocusChangeListener((view, b) -> listener.onEditTextClick(view));
     }
 
     public void addTextChangeListener(TextWatcher textWatcher) {
@@ -270,5 +271,9 @@ public class ClearableEditText extends RelativeLayout implements View.OnClickLis
 
     public interface OnTextClearedListener {
         void onTextCleared();
+    }
+
+    public interface OnEditTextClickListener {
+        void onEditTextClick(View view);
     }
 }

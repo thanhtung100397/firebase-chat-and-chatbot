@@ -46,7 +46,7 @@
         android:layout_marginLeft="@dimen/small_padding"
         android:layout_alignLeft="@id/img_emoji"
         android:layout_alignStart="@id/img_emoji"
-        android:text="@string/seen"
+        android:text="@string/seenBy"
         android:textSize="@dimen/font_size_10dp"
         android:visibility="gone" />
 </RelativeLayout>

@@ -6,4 +6,6 @@ import com.ttt.chat_module.presenters.BaseInteractor;
 public interface HomeInteractor extends BaseInteractor {
     void getChatRooms(ChatRoomInfo startAt, int pageSize, String userID,
                       OnGetChatRoomsCompleteListener listener);
+    void registerChatRoomsChangeListener(String userID, int limit,OnChatRoomChangeListener listener);
+    void unregisterChatRoomsChangeListener();
 }

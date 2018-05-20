@@ -37,8 +37,6 @@ import com.ttt.chat_module.models.notification.TopicNotification;
 import com.ttt.chat_module.models.wrapper_model.LastMessageWrapper;
 
 public class SendImageMessageService extends Service {
-    private ServiceConnection notificationServiceConnection;
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -88,29 +86,10 @@ public class SendImageMessageService extends Service {
         writeBatch.set(chatRoomRef, new LastMessageWrapper(imageMessage), SetOptions.merge());
         writeBatch.commit()
                 .addOnSuccessListener(documentReference -> {
-                    sendNewImageMessageNotification(roomID, senderInfo, imageMessage);
-                    EventBus.getDefault().post(new SendImageMessageSuccessEvent(roomID));
+                    EventBus.getDefault().post(new SendImageMessageSuccessEvent(roomID, imageMessage));
                 })
                 .addOnFailureListener(e -> {
                     EventBus.getDefault().post(new SendImageMessageFailureEvent(roomID, imageMessage));
                 });
-    }
-
-    private void sendNewImageMessageNotification(String romID, UserInfo userInfo, ImageMessage imageMessage) {
-        notificationServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                NewMessageNotification notificationPayload = new NewImageMessageNotification(romID, userInfo, imageMessage);
-                TopicNotification<NewMessageNotification> newMessageNotification = new TopicNotification<>(userInfo.getId(), notificationPayload);
-                ((SendNotificationService.SendNotificationBinder) iBinder).getService().sendTopicNotification(newMessageNotification);
-                unbindService(notificationServiceConnection);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-            }
-        };
-        Intent intent = new Intent(this, SendNotificationService.class);
-        bindService(intent, notificationServiceConnection, Context.BIND_AUTO_CREATE);
     }
 }

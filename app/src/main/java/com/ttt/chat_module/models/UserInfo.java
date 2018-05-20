@@ -26,6 +26,14 @@ public class UserInfo implements Parcelable, Serializable{
     private String avatarUrl;
     private boolean isOnline;
 
+    public UserInfo(UserProfile userProfile) {
+        setId(userProfile.getId());
+        setEmail(userProfile.getEmail());
+        setFirstName(userProfile.getFirstName());
+        setLastName(userProfile.getLastName());
+        setAvatarUrl(userProfile.getAvatarUrl());
+    }
+
     public UserInfo(User user) {
         setId(user.getId());
         setEmail(user.getEmail());
@@ -33,14 +41,6 @@ public class UserInfo implements Parcelable, Serializable{
         setLastName(user.getLastName());
         setAvatarUrl(user.getAvatarUrl());
         setIsOnline(user.getIsOnline());
-    }
-
-    public UserInfo(UserProfile userProfile) {
-        setId(userProfile.getId());
-        setEmail(userProfile.getEmail());
-        setFirstName(userProfile.getFirstName());
-        setLastName(userProfile.getLastName());
-        setAvatarUrl(userProfile.getAvatarUrl());
     }
 
     public UserInfo(SharedPreferences sharedPreferences) {

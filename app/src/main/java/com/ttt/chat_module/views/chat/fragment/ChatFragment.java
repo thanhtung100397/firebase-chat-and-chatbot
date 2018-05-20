@@ -117,6 +117,8 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     private ChatMessageAdapter chatMessageAdapter;
     private EmojiPagerAdapter emojiPagerAdapter;
 
+    private MenuItem itemNotification;
+
     @Override
     protected int getLayoutResources() {
         return R.layout.fragment_chat;
@@ -157,13 +159,11 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
         btnLocation.setOnClickListener(this);
 
         edtMessage.addTextChangeListener(this);
-        edtMessage.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean isFocused) {
-                if(isFocused) {
-                    showEmojiSelector(false, false);
-                }
+        edtMessage.setOnEditTextClickListener(view -> {
+            if (lnEmoji.getVisibility() == View.VISIBLE) {
+                showEmojiSelector(false, false);
             }
+            getPresenter().seenAllUnseenMessage();
         });
 
         if (getPresenter().isCoupleChatRoom()) {
@@ -197,7 +197,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
 
     private void showEmojiSelector(boolean isShow, boolean isAnimate) {
         if (isShow) {
-            if(isAnimate) {
+            if (isAnimate) {
                 TransitionManager.beginDelayedTransition((ViewGroup) getView());
             }
             Utils.hideSoftKeyBoard(getActivity(), edtMessage);
@@ -217,14 +217,14 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
                 .into(imgFriendAvatar);
 
         txtFriendName.setText(friendInfo.getLastName() + " " + friendInfo.getFirstName());
-
-        getPresenter().registerFriendOnlineStateListener(friendInfo.getId());
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.chat_room_menu, menu);
+        itemNotification = menu.findItem(R.id.action_notification);
+        itemNotification.setVisible(false);
         menu.findItem(R.id.action_friend_info).setVisible(getPresenter().isCoupleChatRoom());
     }
 
@@ -236,11 +236,16 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
             }
             break;
 
-            case R.id.action_friend_info:{
+            case R.id.action_friend_info: {
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
                 String friendID = getPresenter().getMapFriendsInfo().entrySet().iterator().next().getKey();
                 intent.putExtra(Constants.KEY_USER_ID, friendID);
                 startActivity(intent);
+            }
+            break;
+
+            case R.id.action_notification:{
+                getPresenter().changeUserNotificationFlag();
             }
             break;
 
@@ -254,11 +259,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ChatFragmentPresenter chatFragmentPresenter = getPresenter();
-        chatFragmentPresenter.bindNotificationService();
-        chatFragmentPresenter.registerOnFriendVisitStageListener();
-        chatFragmentPresenter.registerOnMessageAddedListener();
-        chatFragmentPresenter.registerFriendTypingListener(chatFragmentPresenter.getOwnerInfo().getId());
+        getPresenter().registerServices();
         EventBus.getDefault().register(this);
     }
 
@@ -287,12 +288,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ChatFragmentPresenter chatFragmentPresenter = getPresenter();
-        chatFragmentPresenter.unbindNotificationService();
-        chatFragmentPresenter.unregisterOnFriendVisitStageListener();
-        chatFragmentPresenter.unregisterOnMessageAddedListener();
-        chatFragmentPresenter.unregisterFriendTypingListener();
-        chatFragmentPresenter.unRegisterFriendOnlineStateListener();
+        getPresenter().unregisterServices();
         EventBus.getDefault().unregister(this);
     }
 
@@ -327,7 +323,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
             }
             break;
 
-            case R.id.btn_location:{
+            case R.id.btn_location: {
                 startActivityForResult(new Intent(getActivity(), LocationPickerActivity.class), REQUEST_CODE_PICK_LOCATION);
             }
             break;
@@ -361,7 +357,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
             }
             break;
 
-            case REQUEST_CODE_PICK_LOCATION:{
+            case REQUEST_CODE_PICK_LOCATION: {
                 if (resultCode == Activity.RESULT_OK) {
                     String pickedAddress = data.getStringExtra(Constants.ADDRESS);
                     Location pickedLocation = (Location) data.getSerializableExtra(Constants.LOCATION);
@@ -406,14 +402,14 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSendImageMessageSuccessEvent(SendImageMessageSuccessEvent event) {
         if (getPresenter().getRoomID().equals(event.getRoomID())) {
-            getPresenter().setHasUploadingTask(false);
+            getPresenter().onSendImageComplete(event.getImageMessage(), true);
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSendImageMessageFailureEvent(SendImageMessageFailureEvent event) {
         if (getPresenter().getRoomID().equals(event.getRoomID())) {
-            getPresenter().setHasUploadingTask(false);
+            getPresenter().onSendImageComplete(event.getImageMessage(), false);
             chatMessageAdapter.showOwnerImageMessageError();
         }
     }
@@ -500,6 +496,7 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
 
     @Override
     public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+        getPresenter().seenAllUnseenMessage();
         if ((start + count) == 0) {
             getPresenter().changeUserTypingState(false);
         } else if (before == 0) {
@@ -513,8 +510,13 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
     }
 
     @Override
-    public void updateFriendOnlineState(boolean isOnline) {
+    public void updateFriend(UserInfo userInfo, boolean isOnline) {
         Context context = getActivity();
+        txtFriendName.setText(userInfo.getLastName() + " " + userInfo.getFirstName());
+        GlideApp.with(context)
+                .load(userInfo.getAvatarUrl())
+                .placeholder(R.drawable.avatar_placeholder)
+                .into(imgFriendAvatar);
         if (isOnline) {
             txtFriendOnlineState.setTextColor(context.getResources().getColor(R.color.dot_online_color));
             txtFriendOnlineState.setText(R.string.active_now);
@@ -523,6 +525,16 @@ public class ChatFragment extends BaseFragment<ChatFragmentPresenter> implements
             txtFriendOnlineState.setTextColor(context.getResources().getColor(android.R.color.white));
             txtFriendOnlineState.setText(R.string.offline);
             imgFriendOnlineState.getDrawable().setLevel(0);
+        }
+    }
+
+    @Override
+    public void updateNotificationMenuItem(boolean enableNotification) {
+        itemNotification.setVisible(true);
+        if (enableNotification) {
+            itemNotification.setIcon(R.drawable.ic_no_remind);
+        } else {
+            itemNotification.setIcon(R.drawable.ic_remind);
         }
     }
 }

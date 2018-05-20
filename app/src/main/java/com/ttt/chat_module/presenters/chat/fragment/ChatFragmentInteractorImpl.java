@@ -1,7 +1,10 @@
 package com.ttt.chat_module.presenters.chat.fragment;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -12,6 +15,9 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.models.ChatRoomInfo;
+import com.ttt.chat_module.models.User;
+import com.ttt.chat_module.models.UserInfo;
+import com.ttt.chat_module.models.UserSettings;
 import com.ttt.chat_module.models.google_map.Location;
 import com.ttt.chat_module.models.message_models.EmojiMessage;
 import com.ttt.chat_module.models.message_models.LocationMessage;
@@ -22,11 +28,11 @@ import com.ttt.chat_module.models.message_models.ImageMessage;
 import com.ttt.chat_module.models.message_models.TextMessage;
 import com.ttt.chat_module.common.utils.UserAuth;
 import com.ttt.chat_module.models.TypingState;
-import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.presenters.OnRequestCompleteListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by TranThanhTung on 20/02/2018.
@@ -35,13 +41,15 @@ import java.util.List;
 public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
     private ListenerRegistration messageChangeListenerRegistration;
     private ListenerRegistration typingStateChangeListenerRegistration;
-    private ListenerRegistration userStateChangeListenerRegistration;
+    private List<ListenerRegistration> userInfoListenerRegistrations;
     private ListenerRegistration userVisitStateChangeListenerRegistration;
+    private ListenerRegistration userSettingsChangeListenerRegistration;
     private boolean lastMessageFetched = false;
     private Context context;
 
     public ChatFragmentInteractorImpl(Context context) {
         this.context = context;
+        this.userInfoListenerRegistrations = new ArrayList<>();
     }
 
     @Override
@@ -149,12 +157,11 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
                         listener.onRequestError(e.getMessage());
                         return;
                     }
-
                     List<DocumentChange> documentChanges = documentSnapshots.getDocumentChanges();
                     int size = documentChanges.size();
                     if (!lastMessageFetched) {
                         TextMessage lastTextMessage = size == 0 ?
-                                null : documentChanges.get(size - 1).getDocument().toObject(TextMessage.class);
+                                null : documentChanges.get(0).getDocument().toObject(TextMessage.class);
                         listener.onLastElementFetched(lastTextMessage,
                                 lastTextMessage == null || size < pageSize);
                         lastMessageFetched = true;
@@ -196,7 +203,8 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
     private void resolveTextMessage(DocumentChange documentChange, OnMessageChangedListener listener) {
         switch (documentChange.getType()) {
             case ADDED: {
-                listener.onMessageAdded(documentChange.getDocument().toObject(TextMessage.class));
+                DocumentSnapshot documentSnapshot = documentChange.getDocument();
+                listener.onMessageAdded(documentSnapshot.getId(), documentSnapshot.toObject(TextMessage.class));
             }
             break;
 
@@ -217,7 +225,7 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
             case ADDED: {
                 DocumentSnapshot documentSnapshot = documentChange.getDocument();
                 if (!documentSnapshot.getMetadata().hasPendingWrites()) {
-                    listener.onMessageAdded(documentSnapshot.toObject(ImageMessage.class));
+                    listener.onMessageAdded(documentSnapshot.getId(), documentSnapshot.toObject(ImageMessage.class));
                 }
             }
             break;
@@ -238,7 +246,7 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
         switch (documentChange.getType()) {
             case ADDED: {
                 DocumentSnapshot documentSnapshot = documentChange.getDocument();
-                listener.onMessageAdded(documentSnapshot.toObject(EmojiMessage.class));
+                listener.onMessageAdded(documentSnapshot.getId(), documentSnapshot.toObject(EmojiMessage.class));
             }
             break;
 
@@ -257,8 +265,8 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
     private void resolveLocationMessage(DocumentChange documentChange, OnMessageChangedListener listener) {
         switch (documentChange.getType()) {
             case ADDED: {
-
-                listener.onMessageAdded(documentChange.getDocument().toObject(LocationMessage.class));
+                DocumentSnapshot documentSnapshot = documentChange.getDocument();
+                listener.onMessageAdded(documentSnapshot.getId(), documentSnapshot.toObject(LocationMessage.class));
             }
             break;
 
@@ -395,21 +403,63 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
     }
 
     @Override
-    public void registerUserStateChangeListener(String userID, OnUserOnlineStateChangeListener listener) {
-        userStateChangeListenerRegistration = FirebaseFirestore.getInstance().collection(Constants.USERS_COLLECTION)
-                .document(userID)
-                .addSnapshotListener((documentSnapshot, e) -> {
-                    if (e != null) {
-                        listener.onRequestError(e.getMessage());
-                    }
-                    listener.onOnlineStateChanged(documentSnapshot.getBoolean(User.IS_ONLINE));
-                });
+    public void registerUserStateChangeListener(Map<String, UserInfo> usersInfoMap, OnUserChangeListener listener) {
+        for (Map.Entry<String, UserInfo> entry : usersInfoMap.entrySet()) {
+            ListenerRegistration userInfoListenerRegistration = FirebaseFirestore.getInstance()
+                    .collection(Constants.USERS_COLLECTION)
+                    .document(entry.getKey())
+                    .addSnapshotListener((documentSnapshot, e) -> {
+                        if (e != null) {
+                            listener.onRequestError(e.getMessage());
+                            return;
+                        }
+                        User user = documentSnapshot.toObject(User.class);
+                        listener.onUserChanged(user);
+                    });
+            userInfoListenerRegistrations.add(userInfoListenerRegistration);
+        }
     }
 
     @Override
     public void unRegisterUserStateChangeListener() {
-        if (userStateChangeListenerRegistration != null) {
-            userStateChangeListenerRegistration.remove();
+        int size = userInfoListenerRegistrations.size();
+        for (int i = size - 1; i >= 0; i--) {
+            userInfoListenerRegistrations.remove(i).remove();
+        }
+    }
+
+    @Override
+    public void registerUserSettingsChangeListener(String roomID, OnUserSettingsChangeListener listener) {
+        userSettingsChangeListenerRegistration = FirebaseFirestore.getInstance().collection(Constants.CHAT_ROOMS_COLLECTION)
+                .document(roomID)
+                .collection(ChatRoomInfo.USER_SETTINGS)
+                .addSnapshotListener((documentSnapshots, e) -> {
+                    if (e != null) {
+                        listener.onRequestError(e.getMessage());
+                        return;
+                    }
+                    List<DocumentChange> documentChanges = documentSnapshots.getDocumentChanges();
+                    for (DocumentChange documentChange : documentChanges) {
+                        switch (documentChange.getType()) {
+                            case ADDED:
+                            case MODIFIED: {
+                                DocumentSnapshot documentSnapshot = documentChange.getDocument();
+                                listener.onUserSettingsChange(documentSnapshot.getId(),
+                                        documentSnapshot.toObject(UserSettings.class));
+                            }
+
+                            default: {
+                                break;
+                            }
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void unregisterUserSettingChangeListener() {
+        if (userSettingsChangeListenerRegistration != null) {
+            userSettingsChangeListenerRegistration.remove();
         }
     }
 
@@ -432,6 +482,18 @@ public class ChatFragmentInteractorImpl implements ChatFragmentInteractor {
                 .document(userID)
                 .set(new VisitState(VisitState.LEFT_ROOM_STATE))
                 .addOnSuccessListener(aVoid -> listener.onChangeInRoomStateSuccess(false))
+                .addOnFailureListener(e -> listener.onRequestError(e.getMessage()));
+    }
+
+    @Override
+    public void updateUserSettings(String roomID, String userID, boolean enableNotification,
+                                   OnRequestCompleteListener listener) {
+        FirebaseFirestore.getInstance().collection(Constants.CHAT_ROOMS_COLLECTION)
+                .document(roomID)
+                .collection(ChatRoomInfo.USER_SETTINGS)
+                .document(userID)
+                .set(new UserSettings(enableNotification))
+                .addOnSuccessListener(aVoid -> listener.onRequestSuccess())
                 .addOnFailureListener(e -> listener.onRequestError(e.getMessage()));
     }
 }

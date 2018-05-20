@@ -7,8 +7,8 @@ public class NewImageMessageNotification extends NewMessageNotification {
     public static final String IMAGE_COUNT = "imageCount";
     private int imageCount;
 
-    public NewImageMessageNotification(String roomID, UserInfo ownerInfo, ImageMessage imageMessage) {
-        super(roomID, ownerInfo, imageMessage);
+    public NewImageMessageNotification(String roomID, String toUserID, UserInfo ownerInfo, ImageMessage imageMessage) {
+        super(roomID, toUserID, ownerInfo, imageMessage);
         this.imageCount = imageMessage.getImages().size();
     }
 

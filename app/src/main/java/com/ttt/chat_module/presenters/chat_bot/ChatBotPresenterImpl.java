@@ -103,7 +103,7 @@ public class ChatBotPresenterImpl implements ChatBotPresenter {
             break;
 
             case Constants.CHAT_BOT_ACTION_OPEN_FLASHLIGHT: {
-                handleActionOpenFlash();
+                handleActionOpenCamera();
             }
             break;
 
@@ -116,8 +116,14 @@ public class ChatBotPresenterImpl implements ChatBotPresenter {
     }
 
     private void handleActionCall() {
+        JsonElement phone = pendingResult.getParameters().get(Constants.CHAT_BOT_PHONE_NUMBER_PARAM);
+        if(phone == null) {
+            chatBotActivityView.showChatBotMessage(pendingResult.getFulfillment().getSpeech());
+            pendingResult = null;
+            return;
+        }
         if (chatBotActivityView.requestPhoneCallPermission()) {
-            call(pendingResult.getParameters().get(Constants.CHAT_BOT_PHONE_NUMBER_PARAM).getAsString());
+            call(phone.getAsString());
             chatBotActivityView.showChatBotMessage(pendingResult.getFulfillment().getSpeech());
             pendingResult = null;
         }
@@ -153,7 +159,9 @@ public class ChatBotPresenterImpl implements ChatBotPresenter {
         JsonElement contactPram = pendingResult.getParameters().get(Constants.CHAT_BOT_CONTACT_PARAM);
         if (contactPram == null) {
             JsonElement phonePram = pendingResult.getParameters().get(Constants.CHAT_BOT_PHONE_NUMBER_PARAM);
-            dial(phonePram.getAsString());
+            if(phonePram != null) {
+                dial(phonePram.getAsString());
+            }
             chatBotActivityView.showChatBotMessage(pendingResult.getFulfillment().getSpeech());
             pendingResult = null;
         } else {
@@ -283,5 +291,9 @@ public class ChatBotPresenterImpl implements ChatBotPresenter {
         }
         chatBotActivityView.showChatBotMessage(botMessage);
         pendingResult = null;
+    }
+
+    public void handleActionOpenCamera() {
+
     }
 }

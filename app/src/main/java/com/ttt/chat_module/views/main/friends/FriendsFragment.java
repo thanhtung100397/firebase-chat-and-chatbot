@@ -10,7 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.ttt.chat_module.R;
-import com.ttt.chat_module.bus_event.UserOnlineStateChangeEvent;
+import com.ttt.chat_module.bus_event.UserChangeEvent;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.adapter.recycler_view_adapter.ListFriendsAdapter;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
@@ -60,7 +60,7 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
         Context context = getActivity();
 
         swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryLight, R.color.colorPrimary, R.color.colorPrimaryDark);
+        swipeRefreshLayout.setColorSchemeResources(R.color.loading_blue, R.color.loading_red, R.color.loading_yellow, R.color.loading_green);
 
         if(listFriendsAdapter == null) {
             listFriendsAdapter = new ListFriendsAdapter(context);
@@ -83,8 +83,8 @@ public class FriendsFragment extends BaseFragment<FriendsPresenter> implements F
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserOnlineStateChangeEvent(UserOnlineStateChangeEvent event) {
-        listFriendsAdapter.updateOnlineState(event.getUserID(), event.isOnline());
+    public void onUserInfoChangeEvent(UserChangeEvent event) {
+        listFriendsAdapter.updateUserInfo(new UserInfo(event.getUser()));
     }
 
     @Override

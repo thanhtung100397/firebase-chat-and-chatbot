@@ -46,17 +46,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 
 public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
-    public static final int VIEW_TYPE_FRIEND_TYPING = -2;
+    private static final int VIEW_TYPE_FRIEND_TYPING = -2;
 
-    public static final int VIEW_TYPE_OWNED_TEXT_MESSAGE = 1;
-    public static final int VIEW_TYPE_OWNED_IMAGE_MESSAGE = 3;
-    public static final int VIEW_TYPE_OWNED_EMOJI_MESSAGE = 5;
-    public static final int VIEW_TYPE_OWNED_LOCATION_MESSAGE = 7;
+    private static final int VIEW_TYPE_OWNED_TEXT_MESSAGE = 1;
+    private static final int VIEW_TYPE_OWNED_IMAGE_MESSAGE = 3;
+    private static final int VIEW_TYPE_OWNED_EMOJI_MESSAGE = 5;
+    private static final int VIEW_TYPE_OWNED_LOCATION_MESSAGE = 7;
 
-    public static final int VIEW_TYPE_FRIEND_TEXT_MESSAGE = 2;
-    public static final int VIEW_TYPE_FRIEND_IMAGE_MESSAGE = 4;
-    public static final int VIEW_TYPE_FRIEND_EMOJI_MESSAGE = 6;
-    public static final int VIEW_TYPE_FRIEND_LOCATION_MESSAGE = 8;
+    private static final int VIEW_TYPE_FRIEND_TEXT_MESSAGE = 2;
+    private static final int VIEW_TYPE_FRIEND_IMAGE_MESSAGE = 4;
+    private static final int VIEW_TYPE_FRIEND_EMOJI_MESSAGE = 6;
+    private static final int VIEW_TYPE_FRIEND_LOCATION_MESSAGE = 8;
 
     private UserInfo ownerInfo;
     private Map<String, UserInfo> mapOppositesInfo;
@@ -68,6 +68,16 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
         this.ownerInfo = ownerInfo;
         this.mapOppositesInfo = mapOppositesInfo;
         this.viewPool = new RecyclerView.RecycledViewPool();
+    }
+
+    @Override
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        if (holder instanceof OwnedLocationMessageViewHolder) {
+            GoogleMap googleMap = ((OwnedLocationMessageViewHolder) holder).googleMap;
+            if(googleMap != null) {
+                googleMap.clear();
+            }
+        }
     }
 
     @Override
@@ -295,14 +305,7 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
     private MessageWrapper bindLocationMessageViewHolder(OwnedLocationMessageViewHolder holder, int position) {
         MessageWrapper messageWrapper = bindMessageViewHolder(holder, position);
         LocationMessage locationMessage = (LocationMessage) messageWrapper.getMessage();
-
-        LatLng latLng = new LatLng(locationMessage.getLat(), locationMessage.getLon());
-        holder.googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
-        holder.googleMap.addMarker(new MarkerOptions()
-                .title(locationMessage.getAddress())
-                .position(latLng))
-                .showInfoWindow();
-
+        holder.showLocationAsync(locationMessage.getLat(), locationMessage.getLon(), locationMessage.getAddress());
         return messageWrapper;
     }
 
@@ -655,21 +658,57 @@ public class ChatMessageAdapter extends EndlessLoadingRecyclerViewAdapter {
     }
 
     class OwnedLocationMessageViewHolder extends BaseMessageViewHolder implements OnMapReadyCallback {
+        @BindView(R.id.txt_message)
+        TextView txtMessage;
         @BindView(R.id.map_view)
         MapView mapView;
         GoogleMap googleMap;
+        OnGoogleMapReadyListener listener;
 
         OwnedLocationMessageViewHolder(View itemView) {
             super(itemView);
             mapView.onCreate(null);
             mapView.getMapAsync(this);
+            mapView.onResume();
+        }
+
+        void showLocationAsync(double lat, double lon, String address) {
+            if(googleMap == null) {
+                listener = googleMap -> {
+                    showLocation(lat, lon, address);
+                };
+            } else {
+                showLocation(lat, lon, address);
+            }
+        }
+
+        void showLocation(double lat, double lon, String address) {
+            if(address == null || address.isEmpty()) {
+                txtMessage.setVisibility(View.GONE);
+            } else {
+                txtMessage.setText(address);
+                txtMessage.setVisibility(View.VISIBLE);
+            }
+            LatLng latLng = new LatLng(lat, lon);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
+            googleMap.addMarker(new MarkerOptions()
+                    .title(address)
+                    .position(latLng));
         }
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
             MapsInitializer.initialize(getContext());
             this.googleMap = googleMap;
+            if(listener != null) {
+                listener.onGoogleMapReady(googleMap);
+                listener = null;
+            }
         }
+    }
+
+    interface OnGoogleMapReadyListener {
+        void onGoogleMapReady(GoogleMap googleMap);
     }
 
     class OppositeTextMessageViewHolder extends OwnedTextMessageViewHolder {

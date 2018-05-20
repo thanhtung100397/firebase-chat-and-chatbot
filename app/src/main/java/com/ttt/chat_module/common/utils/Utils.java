@@ -36,4 +36,7 @@ public class Utils {
         return result.toString();
     }
 
+    public static String toBoth(String text) {
+        return "<b>" + text + "</b>";
+    }
 }

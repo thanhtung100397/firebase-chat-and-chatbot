@@ -1,5 +1,7 @@
 package com.ttt.chat_module.views.chat.fragment;
 
+import com.ttt.chat_module.models.User;
+import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.models.message_models.BaseMessage;
 import com.ttt.chat_module.models.message_models.TextMessage;
 
@@ -28,5 +30,7 @@ public interface ChatFragmentView {
     void showTypingStateView(String userID);
     void hideTypingStateView(String userID);
 
-    void updateFriendOnlineState(boolean isOnline);
+    void updateFriend(UserInfo userInfo, boolean isOnline);
+
+    void updateNotificationMenuItem(boolean enableNotification);
 }

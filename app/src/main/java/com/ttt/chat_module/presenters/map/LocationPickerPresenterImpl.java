@@ -14,13 +14,11 @@ import java.util.List;
  */
 
 public class LocationPickerPresenterImpl implements LocationPickerPresenter {
-    private Context context;
     private LocationPickerActivityView locationPickerActivityView;
     private LocationPickerInteractor locationPickerInteractor;
 
     public LocationPickerPresenterImpl(Context context,
                                        LocationPickerActivityView locationPickerActivityView) {
-        this.context = context;
         this.locationPickerActivityView = locationPickerActivityView;
         this.locationPickerInteractor = new LocationPickerInteractorImpl(context);
     }

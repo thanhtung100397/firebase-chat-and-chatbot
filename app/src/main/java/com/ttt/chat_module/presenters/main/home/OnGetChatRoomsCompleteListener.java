@@ -8,5 +8,5 @@ import java.util.List;
 import java.util.Map;
 
 public interface OnGetChatRoomsCompleteListener extends BasePaginationListener<ChatRoomInfo> {
-    void onGetChatRoomsSuccess(Map<String, Integer> roomPositionMap, List<ChatRoom> chatRooms);
+    void onGetChatRoomsSuccess(List<ChatRoom> chatRooms);
 }

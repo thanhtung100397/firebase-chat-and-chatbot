@@ -9,8 +9,8 @@ public class NewEmojiMessageNotification extends NewMessageNotification {
     private String emojiGroup;
     private String emojiID;
 
-    public NewEmojiMessageNotification(String roomID, UserInfo userInfo, EmojiMessage message) {
-        super(roomID, userInfo, message);
+    public NewEmojiMessageNotification(String roomID, String toUserID, UserInfo userInfo, EmojiMessage message) {
+        super(roomID, toUserID, userInfo, message);
         this.emojiGroup = message.getEmojiGroup();
         this.emojiID = message.getEmojiID();
     }

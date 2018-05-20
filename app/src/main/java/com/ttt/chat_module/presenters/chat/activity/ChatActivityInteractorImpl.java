@@ -7,10 +7,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.models.ChatRoomInfo;
+import com.ttt.chat_module.models.ChatRoomUsersInfo;
 import com.ttt.chat_module.models.Path;
 import com.ttt.chat_module.models.TypingState;
 import com.ttt.chat_module.models.User;
 import com.ttt.chat_module.models.UserInfo;
+import com.ttt.chat_module.models.UserSettings;
 
 import java.util.List;
 
@@ -69,8 +71,11 @@ public class ChatActivityInteractorImpl implements ChatActivityInteractor {
             String path = Constants.CHAT_ROOMS_COLLECTION + "/" + newChatRoomDocRef.getId();
 
             CollectionReference typingStatesCollectionRef = newChatRoomDocRef.collection(ChatRoomInfo.TYPING_STATES);
+            CollectionReference userSettingsCollectionRef = newChatRoomDocRef.collection(ChatRoomInfo.USER_SETTINGS);
             for (UserInfo userInfo : usersInfo) {
-                transaction.set(typingStatesCollectionRef.document(userInfo.getId()), new TypingState());
+                String userID = userInfo.getId();
+                transaction.set(typingStatesCollectionRef.document(userID), new TypingState());
+                transaction.set(userSettingsCollectionRef.document(userID), new UserSettings());
                 transaction.set(usersRef.document(userInfo.getId()).collection(User.PATHS).document(newChatRoomDocRef.getId()), new Path(Path.CHAT_ROOM_TYPE, path));
             }
 

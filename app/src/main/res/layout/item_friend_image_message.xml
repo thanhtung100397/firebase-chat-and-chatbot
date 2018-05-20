@@ -49,7 +49,7 @@
         android:layout_marginLeft="@dimen/small_padding"
         android:layout_alignLeft="@id/rc_images"
         android:layout_alignStart="@id/rc_images"
-        android:text="@string/seen"
+        android:text="@string/seenBy"
         android:textSize="@dimen/font_size_10dp"
         android:visibility="gone" />
 </RelativeLayout>

@@ -5,17 +5,20 @@ import com.ttt.chat_module.models.message_models.BaseMessage;
 
 public abstract class NewMessageNotification {
     public static final String ROOM_ID = "roomID";
+    public static final String TO_USER_ID = "toUserID";
     public static final String OWNER_NAME = "ownerName";
     public static final String OWNER_AVATAR_URL = "ownerAvatarUrl";
     public static final String MESSAGE_TYPE = "messageType";
 
     private String roomID;
+    private String toUserID;
     private String ownerName;
     private String ownerAvatarUrl;
     private String messageType;
 
-    public NewMessageNotification(String roomID, UserInfo ownerInfo, BaseMessage message) {
+    public NewMessageNotification(String roomID, String toUserID, UserInfo ownerInfo, BaseMessage message) {
         this.roomID = roomID;
+        this.toUserID = toUserID;
         this.ownerName = ownerInfo.getLastName() + " " + ownerInfo.getFirstName();
         this.ownerAvatarUrl = ownerInfo.getAvatarUrl();
         this.messageType = message.getType();
@@ -30,6 +33,14 @@ public abstract class NewMessageNotification {
 
     public void setRoomID(String roomID) {
         this.roomID = roomID;
+    }
+
+    public String getToUserID() {
+        return toUserID;
+    }
+
+    public void setToUserID(String toUserID) {
+        this.toUserID = toUserID;
     }
 
     public String getOwnerAvatarUrl() {

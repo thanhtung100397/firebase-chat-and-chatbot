@@ -9,6 +9,6 @@ import com.ttt.chat_module.presenters.BasePaginationListener;
  */
 
 public interface OnMessageChangedListener extends BasePaginationListener<TextMessage> {
-    void onMessageAdded(BaseMessage baseMessage);
+    void onMessageAdded(String id, BaseMessage baseMessage);
     void onMessageModified(BaseMessage baseMessage, int position);
 }

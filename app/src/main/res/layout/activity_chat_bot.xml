@@ -28,7 +28,7 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_marginRight="@dimen/edit_text_padding"
-                    android:src="@drawable/avatar_placeholder" />
+                    android:src="@drawable/api_ai_logo" />
 
                 <RelativeLayout
                     android:layout_width="wrap_content"

@@ -12,6 +12,9 @@ public class LocationMessage extends BaseMessage {
         this.address = address;
     }
 
+    public LocationMessage() {
+    }
+
     public double getLat() {
         return lat;
     }

@@ -28,7 +28,7 @@
     <string name="email_exist">Email exist</string>
     <string name="password_should_be_at_leas_6_characters">Password should be at least 6 characters</string>
     <string name="type_your_message">Type your message…</string>
-    <string name="seen">seen</string>
+    <string name="seenBy">seenBy</string>
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
     <string name="seen_by">seen by</string>
@@ -72,7 +72,7 @@
     <string name="pick_address">Pick address</string>
     <string name="enter_address">Enter address</string>
     <string name="gps_title">GPS</string>
-    <string name="gps_message">this feature require GPS enable</string>
+    <string name="gps_message">Enable GPS on your device to locate your current location automatically</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="auto_locate_failed">Auto locate failed</string>
@@ -92,4 +92,13 @@
     <string name="search_result_with_keyword">kết quả tìm kiếm với từ khóa</string>
     <string name="make_dial">Thiết lập quay số</string>
     <string name="make_call">Thiết lập cuộc gọi vào số</string>
+    <string name="location_enabling">Định vị vị trí đang được thiết lập, vui lòng chờ trong giây lát</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="notification_turned_off">Notification turned off</string>
+    <string name="notification_turned_on">Notification turned on</string>
+    <string name="an_emoji">an emoji</string>
+    <string name="a_location">a location</string>
+    <string name="turn_off_notification">Turn off notification</string>
+    <string name="seen">seen</string>
 </resources>

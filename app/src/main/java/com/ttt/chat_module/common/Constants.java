@@ -11,6 +11,10 @@ public class Constants {
     public static final String ABSOLUTE_EMOJI_ASSETS_FOLDER_PATH = "file:///android_asset/" + EMOJI_ROOT_ASSETS_FOLDER_PATH;
     public static final String DD_MM_YYYY_DATE_FORMAT = "dd/MM/yyyy";
 
+    public static final double DEFAULT_LAT = 21.036497;
+    public static final double DEFAULT_LON = 105.785625;
+    public static final String DEFAULT_ADDRESS = "Xuân Thủy, Cầu Giấy, Hà Nội";
+
     public static final String PHONE_REGEX = "[0-9]{10,11}";
 
     public static final String FIREBASE_USER_IMAGES_FOLDER_PATH = "user";
@@ -56,6 +60,7 @@ public class Constants {
     public static final String CHAT_BOT_ACTION_VOLUME = "mobile.volume";
     public static final String CHAT_BOT_ACTION_PLAY_MUSIC = "mobile.music";
     public static final String CHAT_BOT_ACTION_OPEN_FLASHLIGHT = "mobile.flashlight";
+    public static final String CHAT_BOT_ACTION_OPEN_CAMERA = "mobile.camera";
     public static final String CHAT_BOT_CONTACT_PARAM = "contact";
     public static final String CHAT_BOT_PHONE_NUMBER_PARAM = "phone";
     public static final String CHAT_BOT_VOLUME_PARAM = "volume";

@@ -11,14 +11,15 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.ttt.chat_module.R;
-import com.ttt.chat_module.bus_event.ChatRoomLastMessageChangeEvent;
-import com.ttt.chat_module.bus_event.UserOnlineStateChangeEvent;
+import com.ttt.chat_module.bus_event.UserChangeEvent;
 import com.ttt.chat_module.common.Constants;
 import com.ttt.chat_module.common.adapter.recycler_view_adapter.ChatRoomsAdapter;
+import com.ttt.chat_module.common.adapter.recycler_view_adapter.UserInfoChatRooms;
 import com.ttt.chat_module.common.recycler_view_adapter.EndlessLoadingRecyclerViewAdapter;
 import com.ttt.chat_module.common.recycler_view_adapter.RecyclerViewAdapter;
 import com.ttt.chat_module.common.utils.UserAuth;
 import com.ttt.chat_module.models.ChatRoom;
+import com.ttt.chat_module.models.ChatRoomInfo;
 import com.ttt.chat_module.models.UserInfo;
 import com.ttt.chat_module.presenters.main.home.HomePresenter;
 import com.ttt.chat_module.presenters.main.home.HomePresenterImpl;
@@ -74,10 +75,12 @@ public class HomeFragment extends BaseFragment<HomePresenter> implements HomeVie
         rcMessages.addItemDecoration(new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
         rcMessages.setAdapter(chatRoomsAdapter);
 
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryLight, R.color.colorPrimary, R.color.colorPrimaryDark);
+        swipeRefreshLayout.setColorSchemeResources(R.color.loading_blue, R.color.loading_red, R.color.loading_yellow, R.color.loading_green);
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        getPresenter().refreshChatRooms();
+        HomePresenter homePresenter = getPresenter();
+        homePresenter.refreshChatRooms();
+        homePresenter.bindServices();
         EventBus.getDefault().register(this);
     }
 
@@ -85,16 +88,12 @@ public class HomeFragment extends BaseFragment<HomePresenter> implements HomeVie
     public void onDestroyView() {
         super.onDestroyView();
         EventBus.getDefault().unregister(this);
+        getPresenter().unbindServices();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUserOnlineStateChangeEvent(UserOnlineStateChangeEvent event) {
-        chatRoomsAdapter.updateOnlineState(event.getUserID(), event.isOnline());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onChatRoomLastMessageChangedListener(ChatRoomLastMessageChangeEvent event) {
-        chatRoomsAdapter.updateLastMessage(event.getRoomID(), event.getLastMessage());
+    public void onUserInfoChangeEvent(UserChangeEvent event) {
+        chatRoomsAdapter.updateUserInfo(new UserInfo(event.getUser()));
     }
 
     @Override
@@ -118,8 +117,8 @@ public class HomeFragment extends BaseFragment<HomePresenter> implements HomeVie
     }
 
     @Override
-    public void refreshChatRooms(Map<String, Integer> roomPositionMap, List<ChatRoom> chatRooms) {
-        chatRoomsAdapter.refreshChatRooms(roomPositionMap, chatRooms);
+    public void refreshChatRooms(Map<String, UserInfoChatRooms> userInfoChatRoomsMap, List<ChatRoom> chatRooms) {
+        chatRoomsAdapter.refreshChatRooms(userInfoChatRoomsMap, chatRooms);
         if(chatRoomsAdapter.getItemCount() == 0) {
             lnNoConversation.setVisibility(View.VISIBLE);
         } else {
@@ -143,8 +142,8 @@ public class HomeFragment extends BaseFragment<HomePresenter> implements HomeVie
     }
 
     @Override
-    public void addMoreChatRooms(Map<String, Integer> roomPositionMap, List<ChatRoom> chatRooms) {
-        chatRoomsAdapter.addChatRooms(roomPositionMap, chatRooms);
+    public void addMoreChatRooms(Map<String, UserInfoChatRooms> userInfoChatRoomsMap, List<ChatRoom> chatRooms) {
+        chatRoomsAdapter.addChatRooms(userInfoChatRoomsMap, chatRooms);
     }
 
     @Override
@@ -155,6 +154,11 @@ public class HomeFragment extends BaseFragment<HomePresenter> implements HomeVie
     @Override
     public void onLoadMore() {
         getPresenter().loadMoreChatRooms();
+    }
+
+    @Override
+    public void updateChatRoom(ChatRoomInfo chatRoomInfo) {
+        chatRoomsAdapter.updateChatRoom(chatRoomInfo);
     }
 
     @Override

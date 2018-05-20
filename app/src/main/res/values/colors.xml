@@ -5,6 +5,11 @@
     <color name="colorPrimaryLight">#73E8FF</color>
     <color name="colorAccent">#FFCB2C</color>
 
+    <color name="loading_blue">#4285F4</color>
+    <color name="loading_red">#EA4335</color>
+    <color name="loading_yellow">#FBBC05</color>
+    <color name="loading_green">#34A853</color>
+
     <color name="blue_light">#53c4f7</color>
 
     <color name="dot_online_color">#00FF00</color>
